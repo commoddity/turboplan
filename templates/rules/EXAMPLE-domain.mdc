@@ -1,0 +1,50 @@
+---
+description: "{{DOMAIN_NAME}} conventions and failure modes"
+globs: "{{GLOBS}}"
+alwaysApply: false
+---
+
+# {{DOMAIN_NAME}} Rules
+
+<!-- BOOTSTRAP: rename this file to a real spoke (e.g. api-client.mdc). Fill tables from real failures and docs. -->
+
+## Scope
+
+What this spoke covers:
+
+- {{SCOPE_1}}
+- {{SCOPE_2}}
+
+What this spoke does **not** cover (route elsewhere):
+
+- {{OUT_OF_SCOPE}}
+
+## Invariants
+
+1. {{INVARIANT_1}}
+2. {{INVARIANT_2}}
+
+## External docs
+
+**Docs (if stuck):** {{CANONICAL_DOC_URL}}
+
+- Prefer official docs over blog posts. Date-stamp when consulted.
+- last consulted: {{YYYY-MM}}
+
+## Problem classes
+
+### `{{Problem Class Name}}`
+
+| Symptom | Cause | Fix |
+| ------- | ----- | --- |
+| {{observable}} | {{root pattern}} | {{actionable steps}} |
+
+<!-- last-verified: YYYY-MM -->
+
+### `{{Another Class}}`
+
+| Symptom | Cause | Fix |
+| ------- | ----- | --- |
+| … | … | … |
+
+<!-- last-verified: YYYY-MM -->

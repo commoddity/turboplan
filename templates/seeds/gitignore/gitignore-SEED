@@ -1,0 +1,60 @@
+# Turboplan bootstrap seed — adapt for the product stack.
+# Agent: merge with existing .gitignore; never remove user entries blindly.
+
+# --- secrets / env (always) ---
+.env
+.env.*
+!.env.example
+!.env.ref
+!.env.*.example
+
+# --- local scratch (always) ---
+tmp/
+temp/
+*.tmp
+*.swp
+*~
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- editors / IDE (common) ---
+.idea/
+.vscode/
+*.code-workspace
+
+# --- logs / coverage ---
+*.log
+coverage/
+*.out
+*.cover
+
+# --- Go (enable when Go project) ---
+# /bin/
+# /dist/
+# *.exe
+# *.test
+# *.prof
+# vendor/   # only if not committing vendor
+
+# --- Node / frontend (enable when applicable) ---
+# node_modules/
+# .yarn/*
+# !.yarn/patches
+# !.yarn/plugins
+# !.yarn/releases
+# !.yarn/sdks
+# dist/
+# .astro/
+# .vite/
+
+# --- Python (enable when applicable) ---
+# __pycache__/
+# .venv/
+# venv/
+# *.pyc
+
+# --- build artifacts ---
+# build/
+# out/

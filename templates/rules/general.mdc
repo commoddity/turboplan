@@ -1,0 +1,448 @@
+---
+description: Always-applied project routing, automation, and safety rules
+alwaysApply: true
+---
+
+# {{PRODUCT_NAME}} — Agent Rules (Turboplan hub)
+
+This file is the always-on entry for Cursor (`.cursor/rules/general.mdc`) and
+for any coding agent that loads `CLAUDE.md` (symlink → here). Domain playbooks
+live beside it as `.cursor/rules/*.mdc`. Invocable workflows live in
+`.claude/skills/*/SKILL.md`.
+
+**`.cursor/rules/` is the sole source of truth for rules.** There is no parallel
+`.claude/rules/` tree. Do not recreate one.
+
+**Hub → spoke (hard):** this file is the hub. Domain playbooks are spokes.
+Do not collapse provider/API/framework detail into this file — route via the
+tables below. New spokes must be added to the Routing Map and/or Problem Class table.
+
+<!-- BOOTSTRAP: replace all {{PLACEHOLDERS}} and rewrite Architecture / Routing. -->
+
+---
+
+# Karpathy Behavioral Guidelines
+
+These guidelines apply **at all times** when coding in an agentic environment.
+They sit above delivery process and domain spokes unless the user explicitly
+overrides them for a task.
+
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial
+tasks, use judgment.
+
+## 1. Think Before Coding
+
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
+
+Before implementing:
+
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them — don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+## 2. Simplicity First
+
+**Minimum code that solves the problem. Nothing speculative.**
+
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes,
+simplify.
+
+## 3. Surgical Changes
+
+**Touch only what you must. Clean up only your own mess.**
+
+When editing existing code:
+
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it — don't delete it.
+
+When your changes create orphans:
+
+- Remove imports/variables/functions that YOUR changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+**The test:** Every changed line should trace directly to the user's request.
+
+## 4. Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+Transform tasks into verifiable goals:
+
+- "Add validation" → "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" → "Write a test that reproduces it, then make it pass"
+- "Refactor X" → "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
+```
+
+Strong success criteria let you loop independently. Weak criteria ("make it
+work") require constant clarification.
+
+Name the **capability layer** you are advancing (see Delivery Principles) so
+work stays ordered.
+
+---
+
+# Cross-Cutting Engineering Standards
+
+These apply to **every** Turboplan project unless the user explicitly overrides
+them for a specific product. Bootstrap must surface conflicts as concerns.
+
+## 1. Language defaults (stack preference)
+
+### Backend / server / CLI / daemons
+
+- **Prefer Go** for all backend, server, CLI, and daemon work when the problem
+  fits a systems/service shape.
+- If there is a **strong** reason to use another language (ecosystem lock-in,
+  mandated runtime, existing large codebase, client-only constraint), raise it
+  as a **bootstrap concern** with a short rationale — do not silently pick it.
+- For most greenfield backend applications, **Go is the default best choice**.
+
+### Frontend / desktop
+
+| Need | Prefer |
+| ---- | ------ |
+| Mostly static / content site | **Astro** |
+| Complex application-style UI logic | **Vue** |
+| Desktop app (native shell + web UI) | **Wails** (Go backend + web frontend) |
+
+Do not invent a parallel frontend stack without stating why the default fails.
+
+## 2. Tests (hard requirement)
+
+- **Every new code path ships with tests** in the same task that introduces it
+  (or an immediately preceding pure-test task if the plan splits that way).
+- **Go:** use the standard `testing` package; prefer **table-driven** tests;
+  cover success, important failures, and edge cases that would break callers.
+- Other languages: follow that language’s idiomatic unit-test layout, still
+  thorough enough to gate merges.
+- No “tests later” for production code in `/task-2-execute` or `/task-3-complete`.
+
+## 3. Linting and auto-fix (hard requirement)
+
+- All product code must pass **language-specific lint / static analysis**.
+- Prefer tools that **auto-fix** (formatters + fixable linters). Run auto-fix
+  first; **fail the gate only** when remaining issues cannot be auto-cleaned.
+- Wire lint into the same verify path as tests (Makefile target, `lefthook`, etc.).
+
+## 4. Git + pre-commit (bootstrap acceptance)
+
+Bootstrap is **not complete** until:
+
+1. The project is a **git repository** (`git init` if none exists — do not
+   re-init over an existing `.git` without asking).
+2. Root **verify tooling** is present: `Makefile` with `verify`, stack lint
+   config, and **`lefthook.yml`** (or approved equivalent). Seeds under
+   `planning/` alone do **not** satisfy this — adapted copies must land at
+   **repo root**.
+3. A **pre-commit hook** runs **all tests and lints** (the project’s full verify
+   suite). Prefer **[lefthook](https://github.com/evilmartians/lefthook)** over
+   ad-hoc hook scripts; wire pre-commit → `make verify`.
+4. Document how to install hooks (e.g. `make install-hooks` / `lefthook install`)
+   in the hub Build & Run section.
+
+See also §6 (execute/complete fail closed if this tooling is missing later).
+
+## 5. Latest stable toolchain (bootstrap)
+
+When bootstrapping (and when first introducing a language/tool in early tasks):
+
+- Install **Go** and other baseline tools at the **latest stable** release (not
+  beta/RC unless the user asks). Prefer the official installer / version manager
+  the project already uses (`mise`, `asdf`, distro packages, or go.dev tarball).
+- Add/upgrade language dependencies to **latest stable** compatible versions
+  (`go get` / `go mod tidy` with current stables; Astro/Vue/Wails/Yarn at current
+  stable tags — not `latest` tags that resolve to unstable majors unless verified).
+- Record chosen versions in hub Build & Run / Architecture so execute agents
+  match the baseline.
+- If the environment cannot upgrade (locked CI image, policy), raise a
+  **bootstrap concern** and document the pinned older version.
+
+## 6. Execute / complete verification gate
+
+`/task-2-execute` and `/task-3-complete` **must** run the full lint + test
+(verify) suite as part of acceptance. Failures block INDEX `✅` and block the
+close-out commit.
+
+**Presence is mandatory (fail closed):** before treating verify as green, agents
+must confirm a root `Makefile` with a `verify` target (lint+test[+build]), stack lint
+config (e.g. `.golangci.yml` for Go), and `lefthook.yml` (or approved equivalent)
+with pre-commit → that verify. If any are missing: **abort** — Status `Blocked`
+on execute; no ✅ / commit / push on complete. Do **not** accept package tests
+alone as a substitute for the full gate.
+
+**Go Makefile (bootstrap):** include `lint`, `test`, `build`, multi-platform
+`build-all`, and `verify` (= lint + test + build). Seeds:
+`templates/seeds/verify/`.
+
+## 7. Complete: push + manual test handoff
+
+`/task-3-complete` by default **pushes** the completed branch to `origin`
+(`git push -u origin HEAD`) after a successful commit.
+
+- Opt out with **`--no-push`** on the skill invocation (local commit + next
+  branch only).
+- Never force-push. Never push secrets.
+- Close-out output **must** include **Manual test** commands the human can run
+  (e.g. start server + `curl` + what to look for). If nothing is runnable yet,
+  write **`Nothing to test`** and explain why (e.g. library-only change, no
+  binary, depends on later tunnel task).
+
+---
+
+## CRITICAL: Read Rules Before You Act
+
+1. **Read before you act.** Before editing or proposing a change, read matching
+   rule file(s) in `.cursor/rules/`.
+2. **This file always applies.**
+3. **Rules override defaults.** If a rule conflicts with instincts, the rule wins.
+4. **If no rule covers the situation, stop and ask** rather than guessing.
+
+### Routing Map — Which Domain Rule To Read
+
+| When you are working on...         | Read and follow                  |
+| ---------------------------------- | -------------------------------- |
+| {{DOMAIN_A_DESCRIPTION}}           | `.cursor/rules/{{domain_a}}.mdc` |
+| {{DOMAIN_B_DESCRIPTION}}           | `.cursor/rules/{{domain_b}}.mdc` |
+| Shared language craft, tests, lint | `.cursor/rules/{{lang}}.mdc`     |
+| Anything else or unsure            | this file + ask                  |
+
+When a task spans multiple areas, read every applicable rule file before starting.
+
+---
+
+## Project Architecture
+
+- **Product**: {{PRODUCT_NAME}}
+- **Shape**: {{CLI_DAEMON_OR_SERVICE_OR_LIB}}
+- **Platforms**: {{OS_LIST}}
+- **Primary language**: {{LANGUAGE_VERSION}}
+- **Build / verify**: {{VERIFY_COMMANDS}}
+
+```
+{{REPO_TREE_SKETCH}}
+```
+
+### Inspiration sources (hard)
+
+- Study references under `{{EXAMPLES_OR_DOCS}}` — **reimplement**; do not vendor
+  or paste third-party trees into the product binary unless explicitly approved.
+- Never put secret API keys in client configs that leave the machine improperly.
+
+### Build & Run
+
+```bash
+{{BUILD_RUN_SNIPPET}}
+```
+
+---
+
+## Delivery Principles
+
+**MVP sequence of record:** [`planning/phases/INDEX.md`](../../planning/phases/INDEX.md).
+Use `/task-1-plan` → `/task-2-execute` → `/task-3-complete`. Do not skip layers.
+
+### Layered build order
+
+{{LAYER_LIST}}
+
+Wire features in dependency order. **Stop at a failed verification.** Do not
+advance to the next layer on a broken base.
+
+### Atomic work + verification gates
+
+Prefer small, independently checkable units. Before calling a chunk done, run
+the cheapest proof that fits (`{{VERIFY_COMMANDS}}`, package tests, manual path).
+
+### Model split: expensive plan → cheap execute
+
+**Intent:** use a **large / expensive** model for `/task-1-plan` (and bootstrap /
+hard dialectic), and a **smaller / faster / cheaper** model for
+`/task-2-execute` and usually `/task-3-complete`.
+
+**Plan handoff bar:** `/task-1-plan` must write an Execution plan detailed enough
+that a **lesser agent** can implement it without rediscovering architecture,
+guessing file paths, or inventing design. Prefer:
+
+- Concrete files/packages to create or edit  
+- Function/type/API shapes or signatures when non-obvious  
+- Ordered steps with `→ verify:` checks  
+- Explicit test cases to add  
+- Exact verify/lint commands  
+- Risks, pitfalls, and “do not” edges  
+
+If the plan is only high-level (“wire the handler”, “add tests”), it is
+**incomplete** — deepen it before Status → `Planned`.
+
+**When to recommend a large model for execute:** only for *particularly*
+difficult tasks (novel protocols, gnarly concurrency, subtle security, or plans
+that still require heavy judgment mid-flight). State that recommendation
+explicitly to the user. **Default assumption:** a thorough plan makes a smaller
+execute model sufficient — do not recommend large-model execute as routine.
+
+---
+
+## Safety / Workflow Rails
+
+NEVER do these without explicit user approval:
+
+- Modify `.cursor/rules/` files (except via `/dialectic-of-cognition` or `/bootstrap-turboplan`)
+- Commit or push to git **outside** `/task-3-complete` (that skill commits and
+  **pushes by default**; use `/task-3-complete TXX --no-push` to skip push)
+- Force-push, rewrite shared history, or push secrets
+- {{EXTRA_NO_GO_1}}
+- {{EXTRA_NO_GO_2}}
+
+### Package managers / toolchain
+
+{{TOOLCHAIN_RULES}}
+
+### Verification defaults
+
+- Prefer `{{VERIFY_COMMANDS}}` after substantive edits
+- If verification fails, fix that layer — do not advance
+
+---
+
+## Rule Maintenance (Self-Evolving Rules)
+
+<!-- last-verified: 2026-07 -->
+
+Rules must improve over time. Follow the dialectic of cognition:
+
+> *From the particular to the general, then from the general to the particular.*
+
+**Operational harness:** invoke `/dialectic-of-cognition` (see
+`.claude/skills/dialectic-of-cognition/SKILL.md`). **Principles** live in this
+section — the skill is only the procedure.
+
+**Write only to** `.cursor/rules/*.mdc`. Never create or edit `.claude/rules/`.
+
+**Trigger:** Apply this process when ANY of these are true:
+
+- Debugging took >5 minutes
+- External documentation was consulted
+- More than one corrective attempt was needed before the fix worked
+- The root cause was non-obvious from the error message alone
+
+Trivial fixes (typos, config values, one-line renames) should **NOT** trigger
+rule updates — they add noise without improving recognition.
+
+### 0. Abort gate — is this generalizable?
+
+Before extracting a principle, apply the one-sentence test: **can you state the
+rule without naming a specific file, function, class, variable, or endpoint?**
+If not, stop here — there is nothing to encode. The value stays in the diff.
+
+Hard bugs often fire the triggers above, but hard bugs are often novel. Prefer
+encoding **failure modes of a framework or pattern** (everyone who hits the
+same mechanism). One-off business-logic bugs usually do not generalize. When in
+doubt, abort.
+
+### 1. Particular → General (abstract)
+
+Extract the **class** of problem, not the instance. Ask: *what general
+principle, if encoded as a rule, would let a future instance of this class be
+recognized and solved immediately?*
+
+This is not about recording the specific fix; it is about the pattern behind it.
+
+### 2. General → Particular (encode)
+
+Write the general principle into the appropriate `.cursor/rules/*.mdc` file(s)
+(use the Routing Table below). A good rule entry for a problem class answers:
+
+1. **What does it look like?** (symptoms — so the agent recognizes the class)
+2. **What causes it?** (root cause pattern — so the agent does not re-investigate)
+3. **How do you fix it?** (actionable steps — so the agent can act quickly)
+
+Recommended format:
+
+```markdown
+### `<Problem Class Name>`
+
+| Symptom        | Cause            | Fix                  |
+| -------------- | ---------------- | -------------------- |
+| `<observable>` | `<root pattern>` | `<actionable steps>` |
+
+<!-- last-verified: YYYY-MM -->
+```
+
+Prefer tables for symptom grids (machine-scannable). One table may hold multiple
+symptom → cause → fix rows for the same problem class.
+
+### 3. Verify — practice tests theory
+
+Before considering the rule updated, simulate: *would the AI, reading this rule
+for the first time, recognize the symptom and apply the fix without
+re-investigation?* If not, the generalization is too abstract (won't trigger) or
+too specific (won't transfer). Refine until a cold read succeeds.
+
+### 4. Check for contradictions
+
+When adding a new principle, scan existing entries in that file. If two entries
+would prescribe different actions for the same symptoms, encode the boundary
+condition (e.g. "Rule A applies unless Condition B") — don't silently overwrite.
+
+### 5. Deduplicate before adding — prefer refinement over proliferation
+
+Before creating a new entry, scan the target file for overlap. If an existing
+entry covers the same symptom set, root cause, or resolution, **improve it**
+(add a row, sharpen the cause, narrow the boundary) rather than creating a
+duplicate. Only create a new entry if the problem class is genuinely novel.
+
+### 6. Rule decay — keep the knowledge base alive
+
+Add `<!-- last-verified: YYYY-MM -->` to each problem class entry you touch.
+When working in a domain, scan entries older than 6 months. If the underlying
+code, API, or architecture has changed, verify the entry is still valid.
+Archive or strike through entries that no longer apply. A stale rule is worse
+than no rule — it steers the agent toward a fix that no longer works.
+
+### 7. File size threshold — split before rules become unreadable
+
+- **Trigger:** a `.cursor/rules/*.mdc` file exceeds **600 lines** after an edit
+  (propose earlier if approaching ~550)
+- **Action:** propose a split to the user — which sub-domain(s) to extract and
+  suggested new file name(s)
+- **Constraint:** never split without user approval
+
+---
+
+## Routing Table — Problem Class → Rule File
+
+| Change type / Problem domain | Rule file                        |
+| ---------------------------- | -------------------------------- |
+| {{DOMAIN_A}}                 | `.cursor/rules/{{domain_a}}.mdc` |
+| {{DOMAIN_B}}                 | `.cursor/rules/{{domain_b}}.mdc` |
+| Language / tests / lint      | `.cursor/rules/{{lang}}.mdc`     |
+| Cross-cutting / unknown      | `.cursor/rules/general.mdc`      |
+
+---
+
+## Skills Inventory
+
+| Skill                     | Path                                             | Purpose                                    |
+| ------------------------- | ------------------------------------------------ | ------------------------------------------ |
+| `/bootstrap-turboplan`    | `.claude/skills/bootstrap-turboplan/SKILL.md`    | From goal → rules + phases + dep spokes + README + .gitignore + root verify gate |
+| `/task-1-plan`            | `.claude/skills/task-1-plan/SKILL.md`            | Plan one phase task                        |
+| `/task-2-execute`         | `.claude/skills/task-2-execute/SKILL.md`         | Implement one phase task                   |
+| `/task-3-complete`        | `.claude/skills/task-3-complete/SKILL.md`        | Verify + dialectic + INDEX ✅ + commit + push (default) + manual test + next branch |
+| `/dialectic-of-cognition` | `.claude/skills/dialectic-of-cognition/SKILL.md` | Encode session learnings into rules        |
+| `/audit-rules`            | `.claude/skills/audit-rules/SKILL.md`            | Read-only audit of rules/skills vs tree    |
