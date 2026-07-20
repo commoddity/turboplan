@@ -41,11 +41,10 @@ Extract from every skill: frontmatter, path refs, tool allowances.
 - Skills inventory in hub ↔ `.claude/skills/*/`  
 - `CLAUDE.md` symlink → `.cursor/rules/general.mdc`  
 - `.claude/rules/` must **not** exist  
-- **Hub fidelity:** `general.mdc` still contains full **Karpathy Behavioral
-  Guidelines** (four numbered sections), **Cross-Cutting Engineering Standards**
-  (Go / Astro·Vue·Wails / tests / lint / lefthook / latest-stable toolchain /
-  complete push + manual test), and **Rule Maintenance** steps **0–7**. If
-  bootstrap paraphrased them away → `MISSING` / dilution gap  
+- **Hub fidelity:** `general.mdc` still contains **Karpathy Behavioral Guidelines**
+  (four sections), **Project Architecture**, **Delivery Principles**, and
+  **Rule Maintenance** steps **0–7**. If bootstrap stripped these → `MISSING` /
+  dilution gap  
 - **Hooks:** lefthook (or documented equivalent) present and wired to lint+test;
   root `Makefile` with `verify`; stack lint config present — flag absence as `BROKEN`
   (execute/complete must hard-abort)  

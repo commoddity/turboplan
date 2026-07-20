@@ -1,4 +1,4 @@
-# Turboplan bootstrap seed — adapt for the product stack.
+# .gitignore seed — adapt for the product stack.
 # Agent: merge with existing .gitignore; never remove user entries blindly.
 
 # --- secrets / env (always) ---

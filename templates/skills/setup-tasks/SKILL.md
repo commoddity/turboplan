@@ -1,8 +1,8 @@
 ---
 name: setup-tasks
 description: >
-  Pre-planning step for a new feature or addition to an existing Turboplan
-  project. Gathers context, reads current rules and INDEX, and proposes new
+  Pre-planning step for a new feature or addition to an existing project.
+  Gathers context, reads current rules and INDEX, and proposes new
   phase stubs without rewriting existing infrastructure. Manual only — /setup-tasks.
 disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write, WebFetch, WebSearch
@@ -11,7 +11,7 @@ allowed-tools: Bash, Read, Grep, Glob, Edit, Write, WebFetch, WebSearch
 # /setup-tasks — New feature → context → phase stubs
 
 You add tasks for a new feature, subsystem, or capability expansion in an
-**already-bootstrapped** Turboplan project. You do **not** rewrite rules,
+**already-bootstrapped** project. You do **not** rewrite rules,
 skills, or the hub. You only produce new `planning/phases/TXX-….md` stubs
 appended to INDEX.
 

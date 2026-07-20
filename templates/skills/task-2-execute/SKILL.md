@@ -31,23 +31,21 @@ the user before heavy work if they are still on a small model.
 
 1. Obey **Karpathy Behavioral Guidelines** in `.cursor/rules/general.mdc` in full
    (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution).
-   Do not treat “surgical” as the only rule.  
-2. Obey **Cross-Cutting Engineering Standards** in `general.mdc` (Go default,
-   Astro/Vue/Wails, tests required, lint+auto-fix).  
-3. Read matching domain spokes before editing those areas.  
-4. **New code requires tests** in this task (Go: table-driven).  
-5. **Run the full lint + test (verify) suite** before claiming AC passed.
+   Do not treat "surgical" as the only rule.  
+2. Read matching domain spokes before editing those areas.  
+3. **New code requires tests** in this task (Go: table-driven).  
+4. **Run the full lint + test (verify) suite** before claiming AC passed.
    Prefer **`make verify`**. Auto-fix first; fail only on remaining unfixable issues.  
-6. **Verify tooling presence (hard abort):** Before claiming AC passed, confirm:
+5. **Verify tooling presence (hard abort):** Before claiming AC passed, confirm:
    - Root `Makefile` with a `verify` target that runs **lint + test** (+ build when applicable)
    - Lint config when the stack expects it (Go: `.golangci.yml`)
    - `lefthook.yml` (or approved equivalent) with **pre-commit → that verify**
    If any are missing: **stop**, Status `Blocked` (or refuse handoff), tell the user to
    restore verify tooling — do **not** treat `go test ./...` (or unit tests alone) as
-   “lint+test green.”  
-7. Never vendor forbidden reference trees.  
-8. Do not commit unless the user explicitly asked (task-3-complete commits + pushes on close-out).  
-9. Only one phase task InProgress unless human approved parallel work.  
+   "lint+test green."  
+6. Never vendor forbidden reference trees.  
+7. Do not commit unless the user explicitly asked (task-3-complete commits + pushes on close-out).  
+8. Only one phase task InProgress unless human approved parallel work.  
 
 ## Procedure
 
@@ -128,4 +126,3 @@ Acceptance passed / Blocked
 - Write `Done` into the INDEX Status column  
 - Skip tests or skip the lint+test verify gate  
 - Treat package tests alone as full verify when Makefile / lefthook / lint config are missing  
- 

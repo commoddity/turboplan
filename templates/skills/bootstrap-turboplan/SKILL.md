@@ -48,6 +48,11 @@ If the answer is vague, ask follow-ups until you have enough to produce an accur
 hub + spokes + phase plan. A human who won't answer these questions isn't ready to
 bootstrap — stop and say so rather than producing a wrong architecture.
 
+**The user may provide this context in the initial prompt, in follow-up answers,
+or as a file attached to the chat session.** If a file is attached and clearly
+contains the project specification (PRD, design doc, notes), read it and
+extract the answers — do not re-ask for information already provided.
+
 ## Hard constraints
 
 1. Write rules only under `.cursor/rules/`. Never create `.claude/rules/`.  
@@ -56,18 +61,29 @@ bootstrap — stop and say so rather than producing a wrong architecture.
 4. Seed `planning/phases/INDEX.md` + one stub file per INDEX row.  
 5. Adapt skill hard constraints to **this** product.  
 6. Do not commit unless the user explicitly asks.  
-7. Do not implement product features in this skill (verify scaffolding / lefthook /
-   README / `.gitignore` / rule spokes from docs **are** in scope).  
-8. Bootstrap AC requires **git repo + verify gate + lefthook**:
-   root `Makefile` with `verify` (lint+test+build for Go), stack lint config, and
-   pre-commit → that verify. Seeds live under `templates/seeds/` (after install:
-   `planning/README-SEED.md`, `planning/gitignore-SEED`, `planning/verify-SEED/`).
+7. Do not implement product features. Specifically:
+   - NEVER create Go source files, `cmd/`, `internal/`, `pkg/`, or `migrations/`
+     directories. These belong to T01 via `/task-2-execute`.
+   - NEVER run `go mod init` or scaffold a Go module. T01 does that.
+   - In-scope (NOT product code): root Makefile, .golangci.yml, lefthook.yml,
+     .gitignore, README.md, .cursor/rules/*.mdc, .claude/skills/*/SKILL.md,
+     CLAUDE.md symlink, planning/phases/INDEX.md + stubs.  
+8. Bootstrap AC requires **git repo + verify gate files present + lefthook installed**:
+   root `Makefile` with `verify` target (lint+test+build for Go), stack lint config,
+   and `lefthook install` succeeded. Seeds live under `templates/seeds/` (after install:
+   `planning/verify-SEED/`).
    Seeds under `planning/` alone are **not** enough — adapted copies must land
    at repo root + hooks installed. Go Makefiles must include `lint`, `test`,
-   `build`, multi-platform `build-all`, and `verify` (= lint+test+build).  
-9. Default stack: **Go** backend; **Astro** / **Vue** / **Wails** per frontend need — raise exceptions as concerns.  
-10. Prefer **latest stable** toolchain and package versions (Go + deps + frontend
-    tooling); raise a concern if the environment cannot upgrade.  
+   `build`, multi-platform `build-all`, and `verify` (= lint+test+build).
+   **Do not require `make verify` to pass yet** — there is no source code.
+   T01 creates the skeleton; verify passes for the first time in T01.  
+9. Use the **stack the user specified** in the technical description. Do not
+   silently substitute languages, frameworks, or toolchains. If the user
+   specified Go, use Go. If they specified React, use React. Raise any
+   non-obvious choices as **bootstrap concerns** with rationale.  
+10. Use the **toolchain versions the user specified** (or current environment
+    baseline). Do not silently upgrade. If the environment constrains versions,
+    document under **Bootstrap concerns**.  
 11. For every named dependency / provided doc set that agents will use: create a
     **dedicated spoke** under `.cursor/rules/` with an **External docs** link to
     the official source, and mirror a short human summary in `README.md`.  
@@ -88,19 +104,21 @@ DELETE / ADAPT / KEEP (per Turboplan Guide 01).
 
 Update `.cursor/rules/general.mdc`:
 
-- **Preserve (do not dilute):** Karpathy Behavioral Guidelines (full four sections);
-  Cross-Cutting Engineering Standards (Go / Astro·Vue·Wails / tests / lint /
-  git+lefthook / latest-stable toolchain / complete push+manual-test);
-  **Model split** (expensive plan → cheap execute + handoff bar);
-  and Rule Maintenance / dialectic steps **0–7** — rewrite product-specific
-  examples only, never replace these with shorter paraphrases  
-- Product name, architecture, build/verify, safety no-gos  
-- Routing Map + Problem Class table for new spokes (include every dep spoke)  
-- Skills inventory  
-- Layered delivery pointing at `planning/phases/INDEX.md`  
-- Dialectic *examples* from **this** domain (failure-mode illustrations only)  
-- Encode stack choices (Go vs exception; Astro / Vue / Wails) in Architecture;
-  if proposing non-default stack, list it under **Bootstrap concerns**  
+- **Strip every reference to Turboplan** — this file is about THIS product, not
+  the methodology that bootstrapped it. No "Turboplan hub", no "Turboplan
+  project", no "bootstrap-turboplan" in the safety rails exception list.
+- **Product name, architecture, build/verify, safety no-gos** — all project-specific
+- **Routing Map + Problem Class table** for new spokes (include every dep spoke)
+- **Skills inventory** — list all skills that exist in `.claude/skills/`
+- **Layered delivery**: reference `planning/phases/INDEX.md` only. Do NOT copy
+  task IDs, layer tables, or phase details into the hub.
+- **Dialectic examples** from **this** domain (failure-mode illustrations only)
+- **Do NOT include** generic language-preference evangelism ("Prefer Go",
+  "Astro vs Vue vs Wails"), generic test/lint/git philosophy, or toolchain
+  upgrade policies that match the template defaults. These are methodology
+  opinions, not project ground truth. If the user specified a language,
+  framework, or toolchain, state it as a fact ("Uses Go 1.26+") not as a
+  preference ("Prefer Go because…").  
 
 ### 3. Spokes (domains + dependency docs)
 
@@ -130,10 +148,21 @@ Update `.cursor/rules/general.mdc`:
 
 Ensure these exist and hard constraints match the product:
 
-- `task-1-plan`, `task-2-execute`, `task-3-complete`, `dialectic-of-cognition`, `audit-rules`  
+- `task-1-plan`, `task-2-execute`, `task-3-complete`, `dialectic-of-cognition`, `audit-rules`, `setup-tasks`  
 - Keep `bootstrap-turboplan` for future retargets  
 
 Remove skills that only serve deleted stacks.
+
+### 4b. Clean up installer leftovers
+
+After verify gate files are adapted to root, delete these stale seeds:
+
+```bash
+rm -f planning/_TEMPLATE.md
+rm -rf planning/verify-SEED
+rm -f planning/README-SEED.md
+rm -f planning/gitignore-SEED
+```
 
 ### 5. CLAUDE.md
 
@@ -167,21 +196,23 @@ ln -sf .cursor/rules/general.mdc CLAUDE.md
    Adapt package paths (`MAIN_PKG`) to the real `cmd/` layout.  
 4. Run **`lefthook install`** (or `make install-hooks`) so hooks are active in
    this clone.  
-5. Bootstrap AC **fails** if any of these are missing, if `verify` is not
-   lint+test(+build), or if hooks are not installed / do not invoke verify.  
+5. Bootstrap AC **fails** if any of these files are missing, if `verify` target is not
+   lint+test(+build), or if hooks are not installed / do not invoke verify.
+   **Do not require `make verify` to pass** — the repo has no source code yet.
+   T01 creates the skeleton; verify first passes in T01.  
 6. `/task-2-execute` and `/task-3-complete` must **hard-abort** when this tooling
    is later deleted — bootstrap must leave them unable to “pass” on tests alone.
 
 ### 6b. Latest stable toolchain + packages (mandatory)
 
-1. Install or upgrade **Go** to the **latest stable** release available for the
-   host OS/arch (official tarball, `mise`/`asdf`, or package manager — prefer
-   what the user already uses). Record the version in hub Build & Run + README Status.  
+1. Install or upgrade the project's **primary language** to the **latest stable**
+   release available for the host OS/arch (use the package manager the user
+   already employs). Record the version in hub Build & Run + README Status.  
 2. When scaffolding modules: use current stable dependency versions
-   (`go get` current stables, `go mod tidy`; for JS: current stable Astro/Vue/Wails
-   and Yarn Berry as required — avoid knowingly unstable majors).  
-3. Install lint/format tools at current stable (e.g. golangci-lint) so verify
-   works.  
+   (`go get` current stables for Go, `go mod tidy`; for JS: `yarn` / `npm`
+   stable versions; avoid knowingly unstable majors).  
+3. Install lint/format tools at current stable (e.g. golangci-lint for Go,
+   ESLint/Prettier for JS) so verify works.  
 4. If policy or the machine blocks upgrades, list under **Bootstrap concerns**
    with the pinned version — do not silently stay on stale toolchains when an
    upgrade is possible.  
@@ -214,7 +245,14 @@ ignore file instead.
 ### 7. Seed phases
 
 1. Derive layered build order from the goal (Guide 02)  
-2. Write `planning/phases/INDEX.md` with T01…Tnn  
+2. Write `planning/phases/INDEX.md` with T01…Tnn
+
+**T01 is always the app boilerplate bootstrap task (L0 skeleton).**
+It creates the minimal runnable program so that `make verify` passes:
+- For a Go app: `go mod init`, `cmd/<name>/main.go` (minimal: flag or `fmt.Println`),
+  `internal/` directory tree (`doc.go` stubs), and the root Makefile verify target.
+- No business logic, no features — just the skeleton that compiles.
+- After T01, `make verify` must pass (lint + build + test on the skeleton).  
 3. Create each stub from the Turboplan task template (Description, Requirements, AC, empty Execution plan section, Depends-on, Next, Layer)  
 4. Final task should be E2E / holistic verification  
 5. Early tasks should include verify wiring / sample test+lint green if scaffold exists  
@@ -250,17 +288,24 @@ humans changed — not only `.mdc` files).
 
 - [ ] Routing Map ↔ rule files bijection  
 - [ ] `CLAUDE.md` symlink OK  
-- [ ] Cross-Cutting Engineering Standards still present in hub  
 - [ ] Git repo exists; root `Makefile` has `verify` (lint+test); lint config present;
-      lefthook (or approved equivalent) installed and runs that verify on pre-commit  
-- [ ] Go (and other baseline tools) at **latest stable**; deps installed at current stables (or concern documented)  
+      lefthook (or approved equivalent) installed and runs that verify on pre-commit
+      (note: `make verify` may fail — no source code yet; T01 makes it pass)  
+- [ ] Primary language (and other baseline tools) at **latest stable**; deps installed at current stables (or concern documented)  
 - [ ] Root `.gitignore` present (`.env`/variants, `tmp/`, stack artifacts — merged if pre-existing)  
 - [ ] Every provided dependency/docs set has a spoke with **Docs (if stuck)** URL + README row  
 - [ ] Root `README.md` exists with ASCII banner, **Summary**, **TOC**, emoji headers, deps section  
 - [ ] No leftover deleted-stack names in rules/skills (grep)  
 - [ ] Every INDEX row has a stub  
 - [ ] Depends-on graph acyclic; T01 actionable  
-- [ ] Non-default language/frontend choices listed as bootstrap concerns (or Go/Astro·Vue·Wails defaults adopted)  
+- [ ] No references to "Turboplan" in `.cursor/rules/general.mdc` (aside from the skills inventory which lists `bootstrap-turboplan` as a skill name)  
+- [ ] Hub states stack choices as facts ("Uses Go 1.26+, React 19") not as methodology preferences ("Prefer Go", "Astro vs Vue vs Wails")
+- [ ] "Karpathy Behavioral Guidelines" heading present in hub (not "Behavioral Guidelines")  
+- [ ] No task IDs or layer tables in general.mdc (INDEX.md is the sole source of truth)  
+- [ ] No product source code created (no `cmd/`, `internal/`, `pkg/`, `migrations/`)  
+- [ ] Installer leftovers cleaned (no `_TEMPLATE.md`, `verify-SEED/`, `README-SEED.md`, `gitignore-SEED` under `planning/`)  
+- [ ] `setup-tasks` skill present in `.claude/skills/` and listed in hub skills inventory  
+- [ ] T01 is the app skeleton bootstrap task (module init, main.go, directory tree, `make verify` passes)  
 
 ### 10. Output to user
 
@@ -280,8 +325,8 @@ humans changed — not only `.mdc` files).
 - patterns: .env* · tmp/ · <stack-specific> …
 
 ### Stack
-- backend: Go (default) / <exception + rationale>
-- frontend: Astro | Vue | Wails | n/a
+- backend: {{BACKEND_LANG}}
+- frontend: {{FRONTEND_FRAMEWORK}} | n/a
 - concerns: … / none
 
 ### Git / hooks
@@ -290,7 +335,7 @@ humans changed — not only `.mdc` files).
 - lint config: .golangci.yml | <stack> | MISSING (fail)
 - lefthook: configured + installed → pre-commit runs make verify
 - seeds: `templates/seeds/` → `planning/*-SEED*` → adapted to root
-- toolchain: Go <version> (latest stable) | pinned concern: …
+- toolchain: {{LANGUAGE}} <version> (latest stable) | pinned concern: …
 - packages: latest stable baseline | concern: …
 
 ### Phases
@@ -311,9 +356,8 @@ Please confirm architecture + layer order + README before /task-1-plan T01.
 - Copy secrets from references into the repo  
 - Skip git init / Makefile verify / lefthook and call bootstrap done  
 - Leave verify seeds only under `planning/` without copying adapted files to project root  
-- Silently choose a non-Go backend without a bootstrap concern  
-- Leave an upgradeable toolchain on an old stable without documenting a concern  
+- Leave any "Turboplan" reference in `.cursor/rules/general.mdc` (the skill inventory listing `bootstrap-turboplan` is the only exception)
+- State stack choices as methodology preferences — state them as facts  
 - Skip a dep/docs spoke when the user named that dependency or provided its docs  
 - Skip creating/updating human `README.md`  
 - Skip creating/updating `.gitignore` (or leave secrets/tmp unignored)  
-- Put framework tutorial essays only in README with no matching `.mdc` (or only in `.mdc` with no README mention) — keep both audiences covered  

@@ -140,7 +140,7 @@ If `origin` is missing, say so, skip push, and tell the user how to add a remote
 
 Write commands the **human** can run to manually exercise this task’s change.
 Be concrete for the stack (Go server → run binary/`go run` + `curl`; CLI →
-example invocations; frontend → `yarn dev` + URL; Wails → `make run`; etc.).
+example invocations; frontend → `yarn dev` + URL; desktop → `make run`; etc.).
 
 Include:
 

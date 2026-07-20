@@ -26,8 +26,7 @@ product code unless the user explicitly asks.
 <!-- BOOTSTRAP: replace this block with product-specific constraints. -->
 
 1. Follow `.cursor/rules/general.mdc` — including **Karpathy Behavioral Guidelines**
-   (think / simplicity / surgical / goal-driven), **Cross-Cutting Engineering
-   Standards**, and domain spokes.  
+   (think / simplicity / surgical / goal-driven) and domain spokes.  
 2. Stay inside this task’s Acceptance Criteria — no gold plating (Simplicity First).  
 3. Execution plan steps must use `→ verify:` pairs (Goal-Driven Execution).  
 4. **Handoff fidelity:** the plan must be technically detailed enough for a
@@ -35,8 +34,8 @@ product code unless the user explicitly asks.
 5. Prefer verification commands already used in the hub (`make verify`, tests, etc.).
    Plans must include **lint + test** gates and **tests for new code**.  
 6. Study references listed in the stub; **reimplement** — do not vendor forbidden trees.  
-7. Respect platform/packaging decisions and **Cross-Cutting Engineering Standards**
-   (Go default; Astro / Vue / Wails; lefthook; latest-stable baselines).  
+7. Respect the project’s stack, platform, and packaging decisions as stated in the hub
+   Architecture section. Do not silently switch languages, frameworks, or toolchains.  
 8. If the task is ambiguous, stop and ask (Think Before Coding) — do not silently pick.  
 9. If this task is *exceptionally* hard even with a detailed plan, add
    **`Execute model recommendation: large`** with a one-line why; otherwise omit

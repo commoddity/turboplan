@@ -20,7 +20,7 @@ coding agents (Cursor, Claude Code, or both).
 
 - [⚡ Quickstart](#-quickstart)
 - [🔌 Cursor and Claude Code Configuration](#-cursor-and-claude-code-configuration)
-- [🛡️ Hard rules for using this pack](#️-hard-rules-for-using-this-pack)
+- [🛡️ Hard Rules](#️-hard-rules)
 - [🌀 Dialectic of Cognition Methodology](#-dialectic-of-cognition-methodology)
   - [📕 Influence: Mao’s *On Practice* (1937)](#-influence-maos-on-practice-1937)
   - [🧰 What `/dialectic-of-cognition` does (summary)](#-what-dialectic-of-cognition-does-summary)
@@ -93,7 +93,7 @@ There is **no** parallel `.claude/rules/` tree. Combined with the hub’s routin
 
 ---
 
-## 🛡️ Hard rules for using this pack
+## 🛡️ Hard Rules
 
 - ❌ **Do not** invent a parallel `.claude/rules/` tree. Rules live only in `.cursor/rules/`. `CLAUDE.md` → symlink to `general.mdc`.
 - 1️⃣ **One InProgress phase task** at a time unless the human explicitly allows more.
@@ -141,8 +141,8 @@ from `/task-3-complete`). Principles live in the hub
 The hub also carries always-on cores that dialectic does **not** replace:
 
 1. 🧭 **Karpathy Behavioral Guidelines** — think / simplicity / surgical / goal-driven  
-2. 🧱 **Cross-Cutting Engineering Standards** — Go default; Astro / Vue / Wails; tests; lint+auto-fix; git+lefthook + **fail-closed verify presence**; latest-stable toolchain; complete push + manual test  
-3. ♻️ **Rule Maintenance** — dialectic of cognition steps 0–7  
+2. ♻️ **Rule Maintenance** — dialectic of cognition steps 0–7  
+3. 🛡️ **Safety / Workflow Rails** — no-gos, verification defaults, commit/push policy  
 
 - `/task-2-execute` and `/task-3-complete` must run `make verify` and hard-abort if verify
   tooling is missing (Makefile, lint config, lefthook pre-commit→verify). Package tests alone

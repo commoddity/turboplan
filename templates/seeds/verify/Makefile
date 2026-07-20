@@ -1,4 +1,4 @@
-# Project verify gate (Turboplan seed — Go)
+# Project verify gate (Go)
 # Bootstrap copies/adapts this to the project root as Makefile.
 # Prefer: make verify  (lint + test + build)
 #
