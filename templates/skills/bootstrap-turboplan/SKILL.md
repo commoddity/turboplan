@@ -24,16 +24,29 @@ implement product features.
 
 ## Arguments (user provides in the invocation)
 
-- **Goal** — what users get when done  
-- **Non-goals** — explicit exclusions  
-- **Constraints** — language, OS, packaging, secrets, no-gos  
+- **Goal** — what users get when done (1–3 paragraphs, end-user perspective)
+- **Technical description** — language, runtime, OS, packaging, architecture
+- **Non-goals** — explicit exclusions
+- **Constraints** — secrets policy, no-gos, verify command, toolchain preferences
 - **Dependencies / libraries** — frameworks the product will use (e.g. Cobra,
-  SQLite driver, Astro) — each should become a rules spoke  
+  SQLite driver, Astro) — each should become a rules spoke
 - **References / docs** — paths/URLs to study (official docs, OpenAPI, examples;
-  reimplement, do not vendor)  
-- Optional: preferred layer list / task count target  
+  reimplement, do not vendor)
+- Optional: preferred layer list / task count target
 
-If Goal is missing, ask once and stop.
+**CRITICAL — context gathering is mandatory.** If the user invokes `/bootstrap-turboplan`
+without a detailed goal and technical description, you MUST ask for them before
+proceeding. Do not invent the goal. Do not guess the stack. Ask:
+
+1. What does the user get when the project is done? (end-user perspective)
+2. What is the technical scope? (language, runtime, OS, packaging, architecture)
+3. What is explicitly out of scope?
+4. What dependencies or external APIs will it use?
+5. Are there reference implementations to study?
+
+If the answer is vague, ask follow-ups until you have enough to produce an accurate
+hub + spokes + phase plan. A human who won't answer these questions isn't ready to
+bootstrap — stop and say so rather than producing a wrong architecture.
 
 ## Hard constraints
 

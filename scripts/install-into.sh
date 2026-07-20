@@ -155,15 +155,17 @@ mkdir -p \
   "${TARGET}/.claude/skills" \
   "${TARGET}/planning/phases" \
   "${TARGET}/planning/verify-SEED"
-sleep 0.3
+sleep 2.5
 STEP=$((STEP + 1))
+spin_stop
 step_done "${STEP}" "${TOTAL_STEPS}" "📂" "Directories" ".cursor / .claude / planning"
 
 # --- step 2: rules -----------------------------------------------------------
 spin_start "Installing agent rules"
 cp -R "${PACK_ROOT}/templates/rules/." "${TARGET}/.cursor/rules/"
-sleep 0.25
+sleep 2.2
 STEP=$((STEP + 1))
+spin_stop
 step_done "${STEP}" "${TOTAL_STEPS}" "🧭" "Agent rules" ".cursor/rules/"
 
 # --- step 3: skills ----------------------------------------------------------
@@ -175,28 +177,34 @@ for skill_dir in "${PACK_ROOT}/templates/skills/"*/; do
   cp -R "${skill_dir}." "${TARGET}/.claude/skills/${name}/"
 done
 shopt -u nullglob
-sleep 0.25
+sleep 2.3
 STEP=$((STEP + 1))
+spin_stop
 step_done "${STEP}" "${TOTAL_STEPS}" "🧩" "Agent skills" ".claude/skills/"
 
 # --- step 4: phases ----------------------------------------------------------
 spin_start "Seeding phase INDEX + template"
 cp "${PACK_ROOT}/templates/phases/INDEX.md" "${TARGET}/planning/phases/INDEX.md"
 cp "${PACK_ROOT}/templates/phases/TXX-template.md" "${TARGET}/planning/phases/_TEMPLATE.md"
-sleep 0.2
+sleep 2.0
 STEP=$((STEP + 1))
+spin_stop
 step_done "${STEP}" "${TOTAL_STEPS}" "📋" "Phase plan" "planning/phases/"
 
 # --- step 5: human README seed -----------------------------------------------
 spin_start "Installing README seed"
 cp "${PACK_ROOT}/templates/seeds/readme/README-SEED.md" "${TARGET}/planning/README-SEED.md"
+sleep 2.0
 STEP=$((STEP + 1))
+spin_stop
 step_done "${STEP}" "${TOTAL_STEPS}" "👤" "README seed" "planning/README-SEED.md"
 
 # --- step 6: gitignore seed --------------------------------------------------
 spin_start "Installing gitignore seed"
 cp "${PACK_ROOT}/templates/seeds/gitignore/gitignore-SEED" "${TARGET}/planning/gitignore-SEED"
+sleep 2.0
 STEP=$((STEP + 1))
+spin_stop
 step_done "${STEP}" "${TOTAL_STEPS}" "🙈" "gitignore seed" "planning/gitignore-SEED"
 
 # --- step 7: verify seeds ----------------------------------------------------
@@ -207,7 +215,9 @@ cp "${PACK_ROOT}/templates/seeds/verify/lefthook.yml" "${TARGET}/planning/verify
 if [[ -f "${PACK_ROOT}/templates/seeds/verify/golangci.yml" ]]; then
   cp "${PACK_ROOT}/templates/seeds/verify/golangci.yml" "${TARGET}/planning/verify-SEED/golangci.yml"
 fi
+sleep 2.8
 STEP=$((STEP + 1))
+spin_stop
 step_done "${STEP}" "${TOTAL_STEPS}" "🧪" "Verify tooling" "Makefile / lefthook / golangci"
 
 # --- step 8: CLAUDE.md symlink -----------------------------------------------
@@ -216,8 +226,9 @@ spin_start "Linking CLAUDE.md hub"
   cd "${TARGET}"
   ln -sfn .cursor/rules/general.mdc CLAUDE.md
 )
-sleep 0.2
+sleep 2.0
 STEP=$((STEP + 1))
+spin_stop
 step_done "${STEP}" "${TOTAL_STEPS}" "🔗" "CLAUDE.md symlink" "→ .cursor/rules/general.mdc"
 
 # --- finale (wizard-style framed summary) -------------------------------------
@@ -249,13 +260,13 @@ echo
 printf '%s\n' "  ${BOLD}${WHT}1️⃣${RST}   Open the project in Cursor / Claude Code"
 printf '    %s\n\n' "${DIM}That's where the agent reads the rules you just installed.${RST}"
 printf '%s\n' "  ${BOLD}${WHT}2️⃣${RST}   Run ${MAG}/bootstrap-turboplan${RST} with your goal"
-printf '    %s\n\n' "${DIM}See guides/PROMPT-bootstrap.md for the prompt format.${RST}"
+printf '    %s\n\n' "${DIM}The agent will ask for a detailed goal, technical scope, and constraints.${RST}"
 printf '%s\n' "  ${BOLD}${WHT}3️⃣${RST}   Bootstrap adapts seeds to the repo root"
 printf '    %s\n\n' "${DIM}Makefile / lefthook / .gitignore / README — not just under planning/.${RST}"
 printf '%s\n' "  ${BOLD}${WHT}4️⃣${RST}   Review the verify gate, then ${MAG}/task-1-plan T01${RST}"
 printf '    %s\n\n' "${DIM}Prefer a large / expensive model for the plan.${RST}"
 echo
 
-printf '%s\n' "${DIM}Docs: guides/00-drop-into-new-project.md · guides/PROMPT-bootstrap.md${RST}"
+printf '%s\n' "${DIM}Docs: METHODOLOGY.md${RST}"
 echo
 printf '%s\n' "🏁  ${BOLD}Happy long-horizon building.${RST} 🛠️"

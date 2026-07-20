@@ -138,6 +138,75 @@ is not done — re-run `/task-1-plan` on a large model.
 
 Only **one** phase task `InProgress` unless the human says otherwise.  
 
+### 🧠 Context gathering (what the agent needs before bootstrapping)
+
+Bootstrap and `/setup-tasks` share a context-gathering pattern. Before building
+anything, the agent must extract from the human:
+
+1. **Goal** — what users get when done (1–3 paragraphs). End-user perspective.
+2. **Technical scope** — language, runtime, OS targets, packaging strategy, secrets
+   policy. Be specific: "Go 1.26+, macOS/Linux host CLI, not Docker-primary."
+3. **Non-goals** — explicit exclusions that prevent scope creep
+4. **Dependencies** — named libraries, frameworks, external APIs. Each becomes a
+   rules spoke with canonical docs URL
+5. **Layer preference** (optional) — if the human already knows the build order
+6. **References** — code or docs to study (reimplement, do not vendor)
+
+**Why this matters:** without this upfront, the agent invents constraints that
+the human then has to correct at review time — wasting both sides. The bootstrap
+skill must refuse to proceed if goal/constraints are missing.
+
+### 🔁 Pre-planning with `/setup-tasks`
+
+For an **existing** Turboplan project (already bootstrapped), adding a new
+feature or subsystem uses `/setup-tasks` instead of re-running bootstrap:
+
+- Gathers context (same pattern as bootstrap: goal, constraints, dependencies)
+- Reads current INDEX and rules to understand the existing architecture
+- Proposes new `planning/phases/TXX-….md` stubs appended to INDEX
+- Does NOT rewrite rules, skills, or README — only adds tasks
+
+**Overlap with bootstrap:** the context-gathering questions are identical. The
+difference is scope: bootstrap re-architects the whole repo; `/setup-tasks` adds
+tasks to an existing plan without disturbing rules or completed work.
+
+### 🔁 Running the loop
+
+After bootstrap or `/setup-tasks`, the work loop is:
+
+```text
+/task-1-plan T01                  📝  large model → handoff-ready plan
+/task-2-execute T01               🛠️  small/cheap model (or large if plan says so)
+/task-3-complete T01              ✅  small model → push (default) + Manual test → branch <T02-stub-stem>
+```
+
+**Model split:**
+
+| Skill | Typical model | Why |
+| ----- | ------------- | --- |
+| `/task-1-plan` | Large / expensive | Design, tradeoffs, handoff fidelity |
+| `/task-2-execute` | Small / fast / cheap | Follow a concrete plan + verify |
+| `/task-3-complete` | Small / cheap | Re-verify, dialectic, commit, push, next branch |
+
+**Plan bar:** `/task-1-plan` must be detailed enough that a lesser agent can
+execute without redesigning (paths, steps → verify, tests, commands, pitfalls).
+
+**Branching:** work on `<stub-stem>` (e.g. `T04-sanitizer-adapter`). After
+complete, push and switch to next stub-stem branch. Never commit on `main`/`master`.
+Never force-push.
+
+**Blocked tasks:** set Status `Blocked` with reason. Do not complete or mark
+INDEX ✅. Human decides: replan, split, or change requirements.
+
+**Granularity heuristics:**
+
+| Too big | Too small | Just right |
+| ------- | --------- | ---------- |
+| "Build the app" | "Rename one variable" | "Sanitizer maps aliases + unit tests" |
+| "All networking" | "Add one log line" | "Tunnel supervisor + URL parse + restart" |
+
+Each task must answer: **How do we know this layer works without the next layer?**
+
 ---
 
 ## 🌱 Rule maintenance (self-evolving)
