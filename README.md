@@ -2,9 +2,7 @@
   <img src=".github/img/turboplan.png" alt="Turboplan" width="700px">
 </div>
 
----
-
-## 💡 Summary <!-- omit in toc -->
+## 🧠 Introduction <!-- omit in toc -->
 
 **Turboplan** is a drop-in methodology pack for long-horizon software work with
 coding agents (Cursor, Claude Code, or both).
@@ -15,6 +13,8 @@ coding agents (Cursor, Claude Code, or both).
 - **Build in phases** — plan → execute → complete, one verifiable layer at a time
 - **Evolve as you learn** — dialectic of cognition captures hard-won patterns back into the rules
 - **Product-agnostic** — no sample product is bundled; adapts to your stack
+
+> 💡 **For full methodology details, see [`METHODOLOGY.md`](METHODOLOGY.md).**
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -33,15 +33,18 @@ coding agents (Cursor, Claude Code, or both).
 > **To avoid using and paying for 🇺🇸 AI providers like [Anthropic](https://www.scmp.com/news/china/science/article/3346519/deadly-strike-iranian-primary-school-raises-questions-about-ai-accountability), it is recommended to configure your coding agents to use alternative backends such as [DeepSeek](https://api-docs.deepseek.com/) *(most cost effective)* or [Moonshot AI](https://platform.kimi.ai/docs/api/overview) *(most intelligent their Kimi K3 model)*.**
 >
 >
+> 1️⃣ **Cursor** — Use [commoddity/discursive](https://github.com/commoddity/discursive)
+>
 > <a href="https://github.com/commoddity/discursive" target="_blank">
-> <div align="center">
+> <div align="left">
 >   <img src=".github/img/Discursive.png" alt="Discursive" width="300px">
 > </div>
 > </a>
 >
-> 1️⃣ **Cursor** — Use the open-source gateway at [commoddity/discursive](https://github.com/commoddity/discursive): a local OpenAI-compatible proxy + public HTTPS tunnel so Cursor Agent can call Moonshot Kimi and/or DeepSeek without pointing Override Base URL at localhost.
+> A custom gateway proxy that enables Cursor's full agentic and tool calling capabilities with Moonshot Kimi and/or DeepSeek.
 > 
-> 2️⃣ **Claude Code** — Detailed setup instructions for alternative APIs can be found in the article by [The Tricontinental](https://thetricontinental.org/)'s publication [Bandung Circuits](https://thetricontinental.org/bandung-circuits/) entitled: [How to Connect Claude Code to Alternative APIs](https://thetricontinental.org/how-to-connect-claude-code-to-alternative-apis/).
+> 2️⃣ **Claude Code** — Detailed setup instructions for alternative APIs can be found in the article by [The Tricontinental](https://thetricontinental.org/)'s publication [Bandung Circuits](https://thetricontinental.org/bandung-circuits/) entitled: 
+> [How to Connect Claude Code to Alternative APIs](https://thetricontinental.org/how-to-connect-claude-code-to-alternative-apis/).
 
 
 ## ⚡ Quickstart
@@ -54,6 +57,11 @@ One argument: the **absolute path** of the target project.
 ```
 
 The script copies rules, skills, and phase templates, then links `CLAUDE.md` → `.cursor/rules/general.mdc`.
+
+<p align="center">
+  <img src=".github/img/turboplan.gif" alt="Installing Turboplan" width="600" /><br/>
+  <em>Installing Turboplan</em>
+</p>
 
 Then:
 
@@ -76,10 +84,10 @@ Then:
 
 For **new features** in an existing Turboplan project, use `/setup-tasks` instead of re-running bootstrap.
 
-Plans must be **handoff-ready** for a lesser execute agent (see hub "Model split").
+Plans will be **handoff-ready** for a lesser execute agent (see hub "Model split").
 Only flag large-model execute when the task is exceptionally hard.
 
-For full methodology details, see [`METHODOLOGY.md`](METHODOLOGY.md).
+> 💡 **For full methodology details, see [`METHODOLOGY.md`](METHODOLOGY.md).**
 
 ## 🔌 Cursor and Claude Code Configuration
 
