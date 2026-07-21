@@ -39,7 +39,7 @@ Two entry points:
 
 ### 📢 Public Service Announcement: <!-- omit in toc -->
 
-> **To avoid using and paying for 🇺🇸 AI providers like [Anthropic](https://www.scmp.com/news/china/science/article/3346519/deadly-strike-iranian-primary-school-raises-questions-about-ai-accountability), it is recommended to configure your coding agents to use alternative backends such as [DeepSeek](https://api-docs.deepseek.com/) *(most cost effective with `v4-pro` and `v4-flash`)*, [Moonshot AI](https://platform.kimi.ai/docs/api/overview) *(most intelligent with `kimi-k3`)* or [Thaura](https://thaura.ai/story) *(most ethical - made with [Tech for Palestine](https://techforpalestine.org)*.**
+> **To avoid using and paying for 🇺🇸 AI providers like [Anthropic](https://www.scmp.com/news/china/science/article/3346519/deadly-strike-iranian-primary-school-raises-questions-about-ai-accountability), it is recommended to configure your coding agents to use alternative backends such as [DeepSeek](https://api-docs.deepseek.com/) *(most cost effective with `v4-pro` and `v4-flash`)*, [Moonshot AI](https://platform.kimi.ai/docs/api/overview) *(most intelligent with `kimi-k3`)* or [Thaura](https://thaura.ai/story) *(most ethical - made with [Tech for Palestine](https://techforpalestine.org))*.**
 >
 >
 > 1️⃣ **Cursor** — Use [commoddity/discursive](https://github.com/commoddity/discursive)
