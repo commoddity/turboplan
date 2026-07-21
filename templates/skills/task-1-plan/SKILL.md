@@ -2,18 +2,23 @@
 name: task-1-plan
 description: >
   Plan or re-plan a single MVP phase task from planning/phases/. Produce a
-  handoff-ready plan so a lesser/cheaper model can run /task-2-execute. Prefer
-  a large model for this skill. Manual only — /task-1-plan TXX.
+  handoff-ready plan so a lesser model can run /task-2-execute. Use a
+  [medium] model by default; switch to [large] only for complex tasks.
+  Manual only — /task-1-plan TXX.
 disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 ---
 
 # /task-1-plan — Plan one atomic MVP task
 
-You refine **one** task file under `planning/phases/` so a **lesser / cheaper
-agent** can run `/task-2-execute` next without rediscovering the design. Prefer
-running this skill on a **large / expensive** model. You do **not** implement
-product code unless the user explicitly asks.
+You refine **one** task file under `planning/phases/` so a **lesser agent**
+can run `/task-2-execute` next without rediscovering the design. Use a
+**[medium]** model by default; switch to **[large]** only for complex tasks.
+You do **not** implement product code unless the user explicitly asks.
+
+> 💡 Model sizing is a **recommendation**, not a hard constraint — use the best
+> model you have access to for the task's complexity.
+> See hub [Model recommendations](../../README.md#model-recommendations).
 
 ## Arguments
 
@@ -39,7 +44,7 @@ product code unless the user explicitly asks.
 8. If the task is ambiguous, stop and ask (Think Before Coding) — do not silently pick.  
 9. If this task is *exceptionally* hard even with a detailed plan, add
    **`Execute model recommendation: large`** with a one-line why; otherwise omit
-   (default = small/cheap execute is fine).  
+   (default = [medium]/[small] execute is fine).  
 
 ## Procedure
 
@@ -58,14 +63,14 @@ the codebase diverged. Record **Reality notes** if upstream task-3-complete left
 
 ### 3. Write execution plan into the task file
 
-Write for a **junior / smaller-model executor**: no implied context.
+Write for a **junior / lesser-model executor**: no implied context.
 
 ```markdown
 ## Execution plan (filled by /task-1-plan)
 
 **Date:** YYYY-MM-DD
 **Codebase snapshot:** …
-**Execute model:** small/default | large (only if justified below)
+**Execute model:** [medium]/[small] (default) | large (only if justified below)
 
 ### Context for executor
 - Goal in one paragraph
@@ -89,7 +94,7 @@ Write for a **junior / smaller-model executor**: no implied context.
 - …
 
 ### Execute model recommendation
-- default (small/cheap) | large — rationale: …
+- [medium]/[small] (default) | large — rationale: …
 ```
 
 Set Status to `Planned` only when a lesser agent could follow the plan cold.
@@ -97,11 +102,15 @@ Append Status History row.
 
 ### 4. Output to user
 
-Ready? / Key steps / AC / Execute model: default|large / Next: `/task-2-execute TXX`
+Ready? / Key steps / AC / Execute model: [medium](default)|large / Next: `/task-2-execute TXX`
 
 ## Do not
 
 - Implement the task  
 - Expand scope into later layers  
 - Mark INDEX `✅`  
-- Leave a hand-wavy plan that forces the execute model to re-design  
+- Leave a hand-wavy plan that forces the execute model to re-design
+
+[large]: https://platform.kimi.ai/docs/guide/kimi-k3-quickstart
+[medium]: https://api-docs.deepseek.com/quick_start/pricing
+[small]: https://api-docs.deepseek.com/quick_start/pricing  

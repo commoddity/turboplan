@@ -13,12 +13,17 @@ allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 You implement **exactly one** task from `planning/phases/`. Stop when Acceptance
 criteria pass (or blocked). Closing the task is **`/task-3-complete`**.
 
-This skill is intended to run on a **smaller / faster / cheaper** model when the
-Execution plan from `/task-1-plan` meets the hub handoff bar. Follow the plan
+This skill is intended to run on a **[medium] or [small]** model when the
+Execution plan from `/task-1-plan` meets the hub handoff bar. Default to
+[small] when the plan is thorough; use [medium] for non-trivial implementations
+the plan flags as complex. Follow the plan
 literally; if the plan is too vague to proceed, **stop** and send back to
-`/task-1-plan` (or ask the user to re-plan on a large model) — do not invent a
+`/task-1-plan` (or ask the user to re-plan on a [large] model) — do not invent a
 new design. If the plan marks **`Execute model recommendation: large`**, tell
-the user before heavy work if they are still on a small model.  
+the user before heavy work if they are still on a [small] model.
+
+> 💡 Model sizing is a **recommendation**, not a hard constraint — run this on
+> whatever model you have available.  
 
 ## Arguments
 
@@ -45,7 +50,11 @@ the user before heavy work if they are still on a small model.
    "lint+test green."  
 6. Never vendor forbidden reference trees.  
 7. Do not commit unless the user explicitly asked (task-3-complete commits + pushes on close-out).  
-8. Only one phase task InProgress unless human approved parallel work.  
+8. Only one phase task InProgress unless human approved parallel work.
+
+[large]: https://platform.kimi.ai/docs/guide/kimi-k3-quickstart
+[medium]: https://api-docs.deepseek.com/quick_start/pricing
+[small]: https://api-docs.deepseek.com/quick_start/pricing  
 
 ## Procedure
 

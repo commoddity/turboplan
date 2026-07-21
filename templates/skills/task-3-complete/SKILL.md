@@ -15,10 +15,15 @@ implement product features here — you re-verify, capture learnings, sync the
 backlog, mark the INDEX complete, **commit**, **push** (unless `--no-push`),
 give the user **manual test** commands, and **start the next task branch**.
 
-Usually safe on a **smaller / cheaper** model (mechanical verify + dialectic
-triage + git). If dialectic Mode A/B looks like a deep novel failure mode, you
-may recommend the user re-run dialectic on a large model — do not block close-out
-on that alone when verify is green and AC passed.
+Use a **[medium] or [small]** model: medium when substantial execution means
+significant dialectic learning to encode, small for routine mechanical
+close-outs. Mechanical verify + dialectic triage + git. If dialectic Mode A/B
+looks like a deep novel failure mode, you may recommend the user re-run
+dialectic on a [large] model — do not block close-out on that alone when verify
+is green and AC passed.
+
+> 💡 Model sizing is a **recommendation**, not a hard constraint — run this on
+> whatever model you have available.
 
 ## Arguments
 
@@ -199,4 +204,8 @@ TXX → ✅
 - Use `--no-verify` / skip hooks without explicit user approval  
 - Skip the default push when `--no-push` was **not** set and `origin` exists  
 - Force-push  
-- Omit Manual test / Nothing to test  
+- Omit Manual test / Nothing to test
+
+[large]: https://platform.kimi.ai/docs/guide/kimi-k3-quickstart
+[medium]: https://api-docs.deepseek.com/quick_start/pricing
+[small]: https://api-docs.deepseek.com/quick_start/pricing  
