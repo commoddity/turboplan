@@ -48,7 +48,7 @@ Two entry points:
 > </div>
 > </a>
 >
-> A custom gateway proxy that enables Cursor's full agentic and tool calling capabilities with Moonshot Kimi and/or DeepSeek.
+> A custom gateway proxy that enables Cursor's full agentic and tool calling capabilities with Moonshot (Kimi), DeepSeek and Thaura.
 > 
 > 2️⃣ **Claude Code** — Detailed setup instructions for alternative APIs can be found in the article by [The Tricontinental](https://thetricontinental.org/)'s publication [Bandung Circuits](https://thetricontinental.org/bandung-circuits/) entitled: 
 > [How to Connect Claude Code to Alternative APIs](https://thetricontinental.org/how-to-connect-claude-code-to-alternative-apis/).
