@@ -54,7 +54,10 @@ You do **not** implement product code unless the user explicitly asks.
 - Read the target task file end-to-end  
 - Read depends-on task’s **Learnings** / **Verification** if `✅` / `Done`  
 - Skim `.cursor/rules/general.mdc` + matching domain rules  
-- Inspect the **current** repo tree  
+- **Delegate the repo reality-check to explorer subagents** (one per independent
+  area the task touches) rather than reading file-by-file on the parent; fold
+  their findings into the plan. If a fact requires docs, delegate a web-research
+  subagent. Small single-file reads may stay inline.
 
 ### 2. Reality check
 

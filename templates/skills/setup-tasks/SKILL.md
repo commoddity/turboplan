@@ -5,7 +5,7 @@ description: >
   Gathers context, reads current rules and INDEX, and proposes new
   phase stubs without rewriting existing infrastructure. Manual only — /setup-tasks.
 disable-model-invocation: true
-allowed-tools: Bash, Read, Grep, Glob, Edit, Write, WebFetch, WebSearch
+allowed-tools: Bash, Read, Grep, Glob, Edit, Write, WebFetch, WebSearch, Task
 ---
 
 # /setup-tasks — New feature → context → phase stubs
@@ -29,6 +29,12 @@ if the human provides a vague one-liner, ask the detailed questions before
 writing tasks. A feature too vaguely described to plan is a feature the human
 hasn't thought through yet — stop and say so.
 
+**Preferred input:** a completed `/grill-me` session. When the human arrives
+from `/grill-me`, the settled decisions in its shared-understanding summary
+answer most context questions already — do not re-ask for information already
+settled there; read the summary (and its decision log) and grill only what it
+left open.
+
 ## Procedure
 
 ### 1. Read current state
@@ -36,7 +42,9 @@ hasn't thought through yet — stop and say so.
 - Read `.cursor/rules/general.mdc` — understand architecture, safety rails, stack
 - Read `planning/phases/INDEX.md` — know what exists, what's done, what's next
 - Read any relevant domain spokes for the feature area
-- Grep the codebase if needed to understand current implementation
+- **Delegate codebase exploration to explorer subagents** (one per independent
+  area the feature touches) instead of reading file-by-file on the parent;
+  fan them out in parallel and fold findings in. Small greps may stay inline.
 
 ### 2. Gather context
 

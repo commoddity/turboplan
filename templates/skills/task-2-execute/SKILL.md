@@ -5,7 +5,7 @@ description: >
   until acceptance criteria pass, record verification, then hand off to
   /task-3-complete. Manual only — /task-2-execute TXX.
 disable-model-invocation: true
-allowed-tools: Bash, Read, Grep, Glob, Edit, Write
+allowed-tools: Bash, Read, Grep, Glob, Edit, Write, Task
 ---
 
 # /task-2-execute — Execute one atomic MVP task
@@ -73,6 +73,10 @@ Log Status History.
 - Follow Execution plan  
 - Add/update tests with the code  
 - Auto-fix / lint continuously when practical  
+- **Delegate bounded subtasks** when they are well-scoped and mechanical
+  (behavior-preserving refactors, isolated feature units with a clear spec) to
+  implementer / refactorer subagents; keep design decisions and cross-file
+  coordination on the parent  
 - If you introduce a new library, add/update its `.cursor/rules/<name>.mdc` spoke
   (Docs URL) and a README Dependencies & docs row when practical — otherwise note
   it for `/task-3-complete`  
@@ -93,6 +97,11 @@ stop — Status `Blocked`; do **not** hand off as passed with only package tests
 
 Run **`make verify`** (lint + tests + build when wired). Record commands and outcomes
 in **Verification**. If verify fails: fix or set Status `Blocked`.
+
+**Post-edit checks (when subagents are available):** after non-trivial edits,
+launch code-reviewer and test-runner subagents **in the background** and
+continue; fold their findings in before claiming AC passed. A reviewer-found
+bug blocks the handoff until fixed.
 
 ### 4. Acceptance → all checked or Status `Blocked`
 

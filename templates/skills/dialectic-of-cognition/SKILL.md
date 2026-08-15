@@ -12,7 +12,7 @@ Perform rule maintenance per **Rule Maintenance (Self-Evolving Rules)** in
 `.cursor/rules/general.mdc` — that section is authoritative (triggers, abort
 gate, steps **0–7**). This skill is the operational harness only.
 
-**Store (this project)**: `.cursor/rules/*.mdc` only. Never `.claude/rules/`.
+**Store (this project)**: `.cursor/rules/*.mdc` only.
 
 Follow general.mdc steps 0–7 when encoding (refine, contradict-check, verify,
 timestamp, size threshold **600**).

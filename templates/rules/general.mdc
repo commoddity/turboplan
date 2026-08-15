@@ -5,13 +5,12 @@ alwaysApply: true
 
 # {{PRODUCT_NAME}} — Agent Rules
 
-This file is the always-on entry for Cursor (`.cursor/rules/general.mdc`) and
-for any coding agent that loads `CLAUDE.md` (symlink → here). Domain playbooks
-live beside it as `.cursor/rules/*.mdc`. Invocable workflows live in
-`.claude/skills/*/SKILL.md`.
+This file is the always-on entry for Cursor (`.cursor/rules/general.mdc`).
+Domain playbooks live beside it as `.cursor/rules/*.mdc`. Invocable workflows
+live in `.cursor/skills/*/SKILL.md`.
 
-**`.cursor/rules/` is the sole source of truth for rules.** There is no parallel
-`.claude/rules/` tree. Do not recreate one.
+**`.cursor/rules/` is the sole source of truth for rules.** Do not recreate a
+parallel rules tree elsewhere.
 
 **Hub → spoke (hard):** this file is the hub. Domain playbooks are spokes.
 Do not collapse provider/API/framework detail into this file — route via the
@@ -187,9 +186,9 @@ Rules must improve over time. Follow the dialectic of cognition:
 > *From the particular to the general, then from the general to the particular.*
 
 **Operational harness:** invoke `/dialectic-of-cognition` (see
-`.claude/skills/dialectic-of-cognition/SKILL.md`).
+`.cursor/skills/dialectic-of-cognition/SKILL.md`).
 
-**Write only to** `.cursor/rules/*.mdc`. Never create or edit `.claude/rules/`.
+**Write only to** `.cursor/rules/*.mdc`.
 
 **Trigger:** Apply this process when ANY of these are true:
 
@@ -268,10 +267,11 @@ split to the user. Never split without approval.
 
 | Skill | Path | Purpose |
 | ----- | ---- | ------- |
-| `/bootstrap-turboplan` | `.claude/skills/bootstrap-turboplan/SKILL.md` | From goal → rules + phases + dep spokes + README + .gitignore + root verify gate |
-| `/task-1-plan` | `.claude/skills/task-1-plan/SKILL.md` | Plan one phase task |
-| `/task-2-execute` | `.claude/skills/task-2-execute/SKILL.md` | Implement one phase task |
-| `/task-3-complete` | `.claude/skills/task-3-complete/SKILL.md` | Verify + dialectic + INDEX ✅ + commit + push (default) + manual test + next branch |
-| `/dialectic-of-cognition` | `.claude/skills/dialectic-of-cognition/SKILL.md` | Encode session learnings into rules |
-| `/audit-rules` | `.claude/skills/audit-rules/SKILL.md` | Read-only audit of rules/skills vs tree |
-{{EXTRA_SKILLS}}
+| `/bootstrap-turboplan` | `.cursor/skills/bootstrap-turboplan/SKILL.md` | From goal → rules + phases + dep spokes + README + .gitignore + root verify gate |
+| `/task-1-plan` | `.cursor/skills/task-1-plan/SKILL.md` | Plan one phase task |
+| `/task-2-execute` | `.cursor/skills/task-2-execute/SKILL.md` | Implement one phase task |
+| `/task-3-complete` | `.cursor/skills/task-3-complete/SKILL.md` | Verify + dialectic + INDEX ✅ + commit + push (default) + manual test + next branch |
+| `/dialectic-of-cognition` | `.cursor/skills/dialectic-of-cognition/SKILL.md` | Encode session learnings into rules |
+| `/audit-rules` | `.cursor/skills/audit-rules/SKILL.md` | Read-only audit of rules/skills vs tree |
+| `/grill-me` | `.cursor/skills/grill-me/SKILL.md` | Interrogate an idea over a design tree until shared understanding; feeds /setup-tasks |
+| `/setup-tasks` | `.cursor/skills/setup-tasks/SKILL.md` | New feature → context → phase stubs appended to INDEX |

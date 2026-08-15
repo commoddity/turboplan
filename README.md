@@ -5,18 +5,20 @@
 ## 🧠 Introduction <!-- omit in toc -->
 
 **Turboplan** is a drop-in methodology pack for long-horizon software work with
-coding agents (Cursor, Claude Code, or both).
+Cursor.
 
 Two entry points:
 
 | When                               | Use                                                        |
 | ---------------------------------- | ---------------------------------------------------------- |
 | **New project** (greenfield)       | [`/bootstrap-turboplan`](METHODOLOGY.md#-two-entry-points) |
-| **New feature** (existing project) | [`/setup-tasks`](METHODOLOGY.md#-two-entry-points)         |
+| **New feature** (existing project) | [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning) → [`/setup-tasks`](METHODOLOGY.md#-two-entry-points) |
 
 - **One install script** — copies rules, skills, and phase templates into your repo
+- **Grill the idea first** — `/grill-me` interviews you over a design tree until nothing is silently assumed
 - **Agent gathers context** — detailed goal, technical scope, constraints (refuses without them)
 - **Build in phases** — plan → execute → complete, one verifiable layer at a time
+- **Subagents for facts and mechanics** — explorers, reviewers, test runners, and verifiers do the legwork in parallel; the parent keeps design and decisions
 - **Evolve as you learn** — dialectic of cognition captures hard-won patterns back into the rules
 - **Product-agnostic** — no sample product is bundled; adapts to your stack
 
@@ -27,7 +29,7 @@ Two entry points:
 - [⚡ Quickstart](#-quickstart)
 - [🔁 Running the Work Loop](#-running-the-work-loop)
   - [Model split](#model-split)
-- [🔌 Cursor and Claude Code Configuration](#-cursor-and-claude-code-configuration)
+  - [🔌 Cursor Configuration](#-cursor-configuration)
   - [Model recommendations](#model-recommendations)
 - [🛡️ Hard Rules](#️-hard-rules)
 - [🌀 Dialectic of Cognition Methodology](#-dialectic-of-cognition-methodology)
@@ -51,9 +53,6 @@ Two entry points:
 > </a>
 >
 > A custom gateway proxy that enables Cursor's full agentic and tool calling capabilities with Moonshot Kimi and/or DeepSeek.
-> 
-> 2️⃣ **Claude Code** — Detailed setup instructions for alternative APIs can be found in the article by [The Tricontinental](https://thetricontinental.org/)'s publication [Bandung Circuits](https://thetricontinental.org/bandung-circuits/) entitled: 
-> [How to Connect Claude Code to Alternative APIs](https://thetricontinental.org/how-to-connect-claude-code-to-alternative-apis/).
 
 
 ## ⚡ Quickstart
@@ -65,7 +64,7 @@ One argument: the **absolute path** of the target project.
 ./scripts/install-into.sh /absolute/path/to/YOUR_PROJECT
 ```
 
-The script copies rules, skills, and phase templates, then links `CLAUDE.md` → `.cursor/rules/general.mdc`.
+The script copies rules, skills, and phase templates into your repo.
 
 <p align="center">
   <img src=".github/img/turboplan.gif" alt="Installing Turboplan" width="600" /><br/>
@@ -74,7 +73,7 @@ The script copies rules, skills, and phase templates, then links `CLAUDE.md` →
 
 Then:
 
-1. Open `YOUR_PROJECT` in Cursor / Claude Code
+1. Open `YOUR_PROJECT` in Cursor
 2. Run `/bootstrap-turboplan` 
    
    a. The agent will ask for a detailed goal, technical scope, and constraints before building anything.
@@ -96,8 +95,11 @@ flowchart TD
     C -->|"push + Manual test + next branch"| P
 ```
 
-For **new features** after the MVP is done, use `/setup-tasks` instead of re-running bootstrap.
-It reads current rules and INDEX, then proposes new phase stubs without disturbing existing infrastructure.
+For **new features** after the MVP is done, first run [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning):
+it interrogates the idea in rounds over a design tree (facts via sub-agents,
+decisions via the human) until a shared-understanding summary is confirmed.
+Then use `/setup-tasks` — it reads current rules and INDEX plus the settled
+grilling decisions, then proposes new phase stubs without disturbing existing infrastructure.
 
 Plans will be **handoff-ready** for a lesser execute agent (see hub "[Model split](METHODOLOGY.md#model-split)").
 Only flag large-model execute when the task is exceptionally hard.
@@ -109,6 +111,7 @@ behind each size tier.
 
 | Skill                                   | Recommended model                                                                                                     |
 | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `/grill-me`                             | [Large](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)                                                      |
 | `/bootstrap-turboplan` / `/setup-tasks` | [Large](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)                                                       |
 | `/task-1-plan`                          | [Medium](https://api-docs.deepseek.com/quick_start/pricing) (use [large](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart) only for complex tasks) |
 | `/task-2-execute`                       | [Medium](https://api-docs.deepseek.com/quick_start/pricing) or [small](https://api-docs.deepseek.com/quick_start/pricing) |
@@ -118,16 +121,17 @@ behind each size tier.
 > access to when the task warrants it; scale down when mechanical execution suffices.
 
 > For full work loop details see [`METHODOLOGY.md#-running-the-loop`](METHODOLOGY.md#-running-the-loop).
+> For how skills delegate to subagents see
+> [`METHODOLOGY.md` — Subagent delegation](METHODOLOGY.md#4--subagent-delegation).
 
-## 🔌 Cursor and Claude Code Configuration
+## 🔌 Cursor Configuration
 
-This workflow is intended to work equally well with **Claude Code** and/or **Cursor**. After install, a project has:
+This workflow is built for **Cursor**. After install, a project has:
 
 - **Rules** under `.cursor/rules/` — hub is `general.mdc`; domain spokes sit beside it. Cursor loads these as project rules.
-- **Skills** under `.claude/skills/*/SKILL.md` — invocable commands (`/task-1-plan`, `/task-2-execute`, `/task-3-complete`, …) for Claude Code and Cursor Agents that support skills.
-- **Root `CLAUDE.md`** — a symlink to `.cursor/rules/general.mdc`, so Claude Code reads the same hub (and its routing tables) as Cursor.
+- **Skills** under `.cursor/skills/*/SKILL.md` — invocable commands (`/grill-me`, `/task-1-plan`, `/task-2-execute`, `/task-3-complete`, …) for Cursor agents.
 
-There is **no** parallel `.claude/rules/` tree. Combined with the hub's routing map, both tools share the evolving `.cursor/rules/*.mdc` files maintained by `/dialectic-of-cognition`.
+Combined with the hub's routing map, the evolving `.cursor/rules/*.mdc` files are maintained by `/dialectic-of-cognition`.
 
 ### Model recommendations <!-- omit in toc -->
 
@@ -146,7 +150,7 @@ Where "large", "medium", and "small" appear throughout the docs, they refer to:
 
 ## 🛡️ Hard Rules
 
-- ❌ **Do not** invent a parallel `.claude/rules/` tree. Rules live only in `.cursor/rules/`. `CLAUDE.md` → symlink to `general.mdc`.
+- ❌ **Do not** create rules anywhere but `.cursor/rules/`. Skills live in `.cursor/skills/`.
 - 1️⃣ **One InProgress phase task** at a time unless the human explicitly allows more.
 - ✅ **INDEX Status** uses `✅` when complete (not the word `Done` in the INDEX column).
 - 🚫 Product **features** are out of scope for bootstrap; bootstrap produces rules +
@@ -257,6 +261,6 @@ If Modes A/B find nothing: *"Nothing to capture — session was routine."*
 ├── templates/
 │   ├── seeds/ .................... 🌱 readme · gitignore · verify (Makefile / lefthook / golangci)
 │   ├── rules/ .................... 📜 Generic `general.mdc` + example domain spoke
-│   ├── skills/ ................... 🧩 Bootstrap, setup-tasks, plan, execute, complete, dialectic, audit
+│   ├── skills/ ................... 🧩 Grill-me, bootstrap, setup-tasks, plan, execute, complete, dialectic, audit
 │   └── phases/ ................... 🗂️ INDEX.md skeleton + TXX-template.md
 ```

@@ -5,7 +5,7 @@ description: >
   commit, push branch by default (opt out with --no-push), give manual test
   commands, checkout next stub-stem branch. Manual only — /task-3-complete TXX [--no-push].
 disable-model-invocation: true
-allowed-tools: Bash, Read, Grep, Glob, Edit, Write
+allowed-tools: Bash, Read, Grep, Glob, Edit, Write, Task
 ---
 
 # /task-3-complete — Close one MVP phase task
@@ -99,7 +99,7 @@ Record results in the task **Verification** section if not already current.
 
 ### 3. Dialectic (mandatory)
 
-Fully execute `.claude/skills/dialectic-of-cognition/SKILL.md`
+Fully execute `.cursor/skills/dialectic-of-cognition/SKILL.md`
 (Modes A/B for this project).
 
 ### 4. Downstream task sync
@@ -108,7 +108,8 @@ If this task changed package layout, defaults, branding, or abandoned approaches
 add **Reality notes** (or amend AC) on later stubs. Do not mark them complete.
 If the change altered what humans need to know (new deps, layout, how to run),
 update root **`README.md`** in the same close-out (Dependencies & docs / Status /
-layout). If nothing stale: say so.
+layout) — delegate the README prose update to a doc-writer subagent when the
+diff is large. If nothing stale: say so.
 
 ### 5. Mark complete
 

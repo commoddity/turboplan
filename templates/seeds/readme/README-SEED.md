@@ -53,9 +53,8 @@ Bootstrapped with **[Turboplan](https://github.com/commoddity/turboplan)** (agen
 | Path | For |
 | ---- | --- |
 | [`README.md`](README.md) | 👤 Humans (this file) |
-| [`CLAUDE.md`](CLAUDE.md) | 🔗 Symlink → `.cursor/rules/general.mdc` |
 | [`.cursor/rules/`](.cursor/rules/) | 📜 Conventions for coding agents |
-| [`.claude/skills/`](.claude/skills/) | 🧩 Invocable plan / execute / complete / … |
+| [`.cursor/skills/`](.cursor/skills/) | 🧩 Invocable plan / execute / complete / … |
 | [`planning/phases/`](planning/phases/) | 🗂️ MVP sequence of record |
 
 <!-- BOOTSTRAP: add cmd/, internal/, packages as they appear. -->

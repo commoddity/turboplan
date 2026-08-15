@@ -22,13 +22,16 @@ slice the goal into phases, and loop plan → execute → complete until done.
 | When                               | Use                    | What it does                                                                                                              |
 | ---------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | **New project** (greenfield)       | `/bootstrap-turboplan` | Adapts rules, creates layered phases, ships verify gate, writes README — gets you to a **ready-to-build MVP**             |
-| **New feature** (existing project) | `/setup-tasks`         | Reads current rules + INDEX, proposes new phase stubs — **plans new features** without disturbing existing infrastructure |
+| **New feature** (existing project) | `/grill-me` → `/setup-tasks` | `/grill-me` stress-tests the idea to a settled shared understanding; `/setup-tasks` turns it into new phase stubs without disturbing existing infrastructure |
 
 ```mermaid
 flowchart TD
-    A[Goal / Feature idea] --> B{Bootstrapped?}
+    A[Goal / Feature idea] --> GA{Grill first?}
+    GA -->|Feature| GR["grill-me (design tree → shared understanding)"]
+    GA -->|Greenfield| B{Bootstrapped?}
     B -->|No| C[bootstrap-turboplan]
     B -->|Yes| D[setup-tasks]
+    GR --> D
     C --> E["INDEX.md + rules + skills"]
     D --> E
     E --> F["task-1-plan TXX"]
@@ -51,10 +54,10 @@ One always-on hub routes agents to domain-specific spokes. No duplicated rules t
 | ------------------ | ---------------------------- | ---------------------------------------------------------------------------------------------- |
 | Hub (always on)    | `.cursor/rules/general.mdc`  | Karpathy guidelines, routing, safety, rule maintenance, product architecture, skills inventory |
 | Spokes (on demand) | `.cursor/rules/<domain>.mdc` | Failure modes and conventions for one domain (API, UI, packaging, dependency docs, …)          |
-| Skills (commands)  | `.claude/skills/*/SKILL.md`  | Procedures: bootstrap, setup-tasks, plan, execute, complete, dialectic, audit                  |
+| Skills (commands)  | `.cursor/skills/*/SKILL.md`  | Procedures: grill-me, bootstrap, setup-tasks, plan, execute, complete, dialectic, audit           |
 
-- Cursor loads `.cursor/rules/*.mdc`; Claude Code loads `CLAUDE.md` → symlink to hub
-- **Never** duplicate rules under `.claude/rules/`
+- Skills live in `.cursor/skills/`; Cursor loads `.cursor/rules/*.mdc` as rules and exposes skills as commands
+- **Never** duplicate rules outside `.cursor/rules/`
 - Bootstrap adapts rules to the specific product — deletes inapplicable spokes, creates new ones for named dependencies
 
 ### 2. 📋 Layered phases
@@ -89,6 +92,7 @@ flowchart LR
 
 | Skill                     | When                            | Recommended model                                                         | Does                                                                              |
 | ------------------------- | ------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `/grill-me`               | Before `/setup-tasks`           | Large                                                                     | Design-tree interview in rounds until shared understanding; facts via sub-agents |
 | `/bootstrap-turboplan`    | New project                     | Large                                                                     | Goal → rules + phases + README + verify gate                                      |
 | `/setup-tasks`            | New feature in existing project | Large                                                                     | Context → new phase stubs appended to INDEX                                       |
 | `/task-1-plan TXX`        | Before coding                   | Medium (large only for complex tasks)                                     | Reality-check; handoff-ready plan for execute agent                               |
@@ -100,6 +104,44 @@ flowchart LR
 > 💡 See [README: Model recommendations](README.md#model-recommendations) for which
 > specific provider/models correspond to each size tier. These are **recommendations,**
 > not hard rules — use the best model you have access to for the task's complexity budget.
+
+### 4. 🤖 Subagent delegation
+
+Every skill delegates facts-gathering and mechanical work to **subagents** instead
+of doing it serially on the parent. The parent keeps decisions, design, and
+human interaction. Use **model classes only** — never a specific model alias —
+since available subagents differ per environment.
+
+**Delegation routing:**
+
+| Subagent class        | Purpose                                                                 | Used by                                    |
+| -------------------- | ----------------------------------------------------------------------- | ------------------------------------------ |
+| Explorer             | Find files, read code, trace calls, map architecture, verify facts      | grill-me, setup-tasks, bootstrap, plan     |
+| Web researcher       | Fetch docs, check API references                                        | bootstrap (dep spokes), grill-me, plan     |
+| Implementer          | Well-scoped feature/bugfix from a clear spec                            | execute (bounded subtasks)                 |
+| Refactorer           | Extract/rename/move — behavior-preserving changes                       | execute                                    |
+| Test runner          | Run tests, diagnose failures, self-heal and re-run                      | execute, complete (background)             |
+| Code reviewer        | Correctness/lint/style/bug review of a diff                             | after execute and after dialectic edits    |
+| Verifier             | Skeptical independent check that claimed work is actually done          | after execute (background)                 |
+| Doc writer           | Docs/changelog/README updates from diffs                                | complete, dialectic                        |
+| Bash                 | Multi-step shell workflows                                              | any skill                                  |
+
+**Rules:**
+
+- **Facts are the subagents' job; decisions and design are the parent's.**
+- **Parallelize independent work** — one subagent per independent area in a
+  single batch. Don't block on a running subagent: ask what's unblocked now.
+- **Background post-edit checks:** after non-trivial edits, launch code-reviewer
+  and test-runner subagents in the background and continue; fold results in
+  when they report.
+- **Escalate on bad output:** if a subagent returns incomplete/nonsensical
+  results, re-launch with tighter instructions or do it on the parent. Never
+  accept silently.
+- **Small tasks stay inline.** A single grep or one-file read is cheaper on the
+  parent than a subagent round-trip. Over-splitting negates the win.
+- If the environment has no subagent facility, every skill degrades gracefully
+  to serial execution on the parent — delegation is an optimization, not a
+  prerequisite.
 
 ---
 
@@ -116,6 +158,35 @@ Before building anything, the agent must extract:
 
 The agent **refuses to proceed** without clear answers. A vague one-liner means the
 human hasn't thought it through yet.
+
+---
+
+## 🔥 Grilling (between idea and planning)
+
+`/grill-me` is the interrogator that runs **before** `/setup-tasks` (and
+optionally before `/bootstrap-turboplan`). It converts a rough idea into a
+**settled design tree** so the planning skill starts from shared understanding
+instead of guesses.
+
+**Design tree:** every decision branches into the decisions that hang off it.
+The session works the tree in **rounds**. The **frontier** is every decision
+whose prerequisites are already settled — asked in one numbered round, each
+question with a recommended answer (➡️). Silence = accept the recommendation.
+Answers reshape the tree; the frontier is recomputed each round.
+
+**Facts vs decisions:**
+
+- **Facts are the agent's job** — schema, file paths, library capabilities,
+  existing behavior. Dispatched to sub-agents, never asked of the human. A
+  running exploration is just an unsettled prerequisite: only downstream
+  questions wait for it.
+- **Decisions are the human's** — every one is put to them and waited on.
+
+**Done** = frontier empty: every branch visited, nothing silently assumed. The
+agent then emits a **shared-understanding summary** (numbered, grouped by area,
+with concrete specifics) and waits for the human's confirmation. Only then does
+`/setup-tasks` run — every settled decision must land in the INDEX header and
+task stubs, nothing assumed.
 
 ---
 
@@ -212,7 +283,6 @@ the target repo.
 
 ## ✅ Success criteria for a bootstrap
 
-- `CLAUDE.md` → `.cursor/rules/general.mdc`
 - Hub retains Karpathy Behavioral Guidelines + Rule Maintenance 0–7 + Safety / Workflow Rails
 - Git repo + root `Makefile` with `verify` target + lint config + lefthook installed
 - Primary language at latest stable (or pinned older version documented as concern)

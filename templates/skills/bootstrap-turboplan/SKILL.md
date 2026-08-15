@@ -1,12 +1,12 @@
 ---
 name: bootstrap-turboplan
 description: >
-  From a written product goal, adapt .cursor/rules and .claude/skills, create
-  CLAUDE.md symlink, seed planning/phases, create dependency rule spokes from
+  From a written product goal, adapt .cursor/rules and .cursor/skills, seed
+  planning/phases, create dependency rule spokes from
   provided docs, write a human README.md, and an appropriate .gitignore.
   Manual only — /bootstrap-turboplan. Does not implement product features.
 disable-model-invocation: true
-allowed-tools: Bash, Read, Grep, Glob, Edit, Write, WebFetch, WebSearch
+allowed-tools: Bash, Read, Grep, Glob, Edit, Write, WebFetch, WebSearch, Task
 ---
 
 # /bootstrap-turboplan — Goal → rules + phases + skills + human README
@@ -19,7 +19,7 @@ implement product features.
 
 | Audience | Primary artifacts |
 | -------- | ----------------- |
-| **LLMs / agents** | `.cursor/rules/*.mdc`, `.claude/skills/*/SKILL.md` |
+| **LLMs / agents** | `.cursor/rules/*.mdc`, `.cursor/skills/*/SKILL.md` |
 | **Humans** | Root `README.md` (+ phase INDEX for operators) |
 
 ## Arguments (user provides in the invocation)
@@ -55,20 +55,19 @@ extract the answers — do not re-ask for information already provided.
 
 ## Hard constraints
 
-1. Write rules only under `.cursor/rules/`. Never create `.claude/rules/`.  
-2. Ensure `CLAUDE.md` → symlink to `.cursor/rules/general.mdc`.  
-3. Delete spokes/skills that cannot apply; replace wrong-provider files (do not light-edit).  
-4. Seed `planning/phases/INDEX.md` + one stub file per INDEX row.  
-5. Adapt skill hard constraints to **this** product.  
-6. Do not commit unless the user explicitly asks.  
-7. Do not implement product features. Specifically:
+1. Write rules only under `.cursor/rules/`.
+2. Delete spokes/skills that cannot apply; replace wrong-provider files (do not light-edit).
+3. Seed `planning/phases/INDEX.md` + one stub file per INDEX row.  
+4. Adapt skill hard constraints to **this** product.  
+5. Do not commit unless the user explicitly asks.  
+6. Do not implement product features. Specifically:
    - NEVER create Go source files, `cmd/`, `internal/`, `pkg/`, or `migrations/`
      directories. These belong to T01 via `/task-2-execute`.
    - NEVER run `go mod init` or scaffold a Go module. T01 does that.
    - In-scope (NOT product code): root Makefile, .golangci.yml, lefthook.yml,
-     .gitignore, README.md, .cursor/rules/*.mdc, .claude/skills/*/SKILL.md,
-     CLAUDE.md symlink, planning/phases/INDEX.md + stubs.  
-8. Bootstrap AC requires **git repo + verify gate files present + lefthook installed**:
+     .gitignore, README.md, .cursor/rules/*.mdc, .cursor/skills/*/SKILL.md,
+     planning/phases/INDEX.md + stubs.  
+7. Bootstrap AC requires **git repo + verify gate files present + lefthook installed**:
    root `Makefile` with `verify` target (lint+test+build for Go), stack lint config,
    and `lefthook install` succeeded. Seeds live under `templates/seeds/` (after install:
    `planning/verify-SEED/`).
@@ -77,28 +76,33 @@ extract the answers — do not re-ask for information already provided.
    `build`, multi-platform `build-all`, and `verify` (= lint+test+build).
    **Do not require `make verify` to pass yet** — there is no source code.
    T01 creates the skeleton; verify passes for the first time in T01.  
-9. Use the **stack the user specified** in the technical description. Do not
+8. Use the **stack the user specified** in the technical description. Do not
    silently substitute languages, frameworks, or toolchains. If the user
    specified Go, use Go. If they specified React, use React. Raise any
    non-obvious choices as **bootstrap concerns** with rationale.  
-10. Use the **toolchain versions the user specified** (or current environment
+9. Use the **toolchain versions the user specified** (or current environment
     baseline). Do not silently upgrade. If the environment constrains versions,
     document under **Bootstrap concerns**.  
-11. For every named dependency / provided doc set that agents will use: create a
+10. For every named dependency / provided doc set that agents will use: create a
     **dedicated spoke** under `.cursor/rules/` with an **External docs** link to
     the official source, and mirror a short human summary in `README.md`.  
-12. Create or replace root **`README.md`** with: emoji section headers; ASCII
+11. Create or replace root **`README.md`** with: emoji section headers; ASCII
     banner; a brief human **Summary**; a **Table of Contents** immediately under
     the summary; then the body sections — humans read this; agents read rules/skills.  
-13. Create or update root **`.gitignore`** appropriate to the stack — use best
+12. Create or update root **`.gitignore`** appropriate to the stack — use best
     judgment (always secrets + scratch; language/tooling artifacts as needed).  
 
 ## Procedure
 
 ### 1. Inventory current agent files
 
-List `.cursor/rules/*.mdc` and `.claude/skills/*/SKILL.md`. Classify each:
+List `.cursor/rules/*.mdc` and `.cursor/skills/*/SKILL.md`. Classify each:
 DELETE / ADAPT / KEEP (per Turboplan Guide 01).
+
+**Delegate:** fan out explorer subagents (one per independent area of the
+codebase/tree) to build the inventory and assess each file; delegate doc
+fetches for dependency spokes to web-research subagents in parallel. Keep
+classification **decisions** on the parent.
 
 ### 2. Rewrite hub
 
@@ -109,7 +113,7 @@ Update `.cursor/rules/general.mdc`:
   project", no "bootstrap-turboplan" in the safety rails exception list.
 - **Product name, architecture, build/verify, safety no-gos** — all project-specific
 - **Routing Map + Problem Class table** for new spokes (include every dep spoke)
-- **Skills inventory** — list all skills that exist in `.claude/skills/`
+- **Skills inventory** — list all skills that exist in `.cursor/skills/`
 - **Layered delivery**: reference `planning/phases/INDEX.md` only. Do NOT copy
   task IDs, layer tables, or phase details into the hub.
 - **Dialectic examples** from **this** domain (failure-mode illustrations only)
@@ -148,7 +152,7 @@ Update `.cursor/rules/general.mdc`:
 
 Ensure these exist and hard constraints match the product:
 
-- `task-1-plan`, `task-2-execute`, `task-3-complete`, `dialectic-of-cognition`, `audit-rules`, `setup-tasks`  
+- `grill-me`, `task-1-plan`, `task-2-execute`, `task-3-complete`, `dialectic-of-cognition`, `audit-rules`, `setup-tasks`  
 - Keep `bootstrap-turboplan` for future retargets  
 
 Remove skills that only serve deleted stacks.
@@ -164,13 +168,7 @@ rm -f planning/README-SEED.md
 rm -f planning/gitignore-SEED
 ```
 
-### 5. CLAUDE.md
-
-```bash
-ln -sf .cursor/rules/general.mdc CLAUDE.md
-```
-
-### 6. Git repo + verify tooling + lefthook (bootstrap acceptance — mandatory)
+### 5. Git repo + verify tooling + lefthook (bootstrap acceptance — mandatory)
 
 1. If `.git` is missing: `git init` in the project root (empty repo / first commit
    later is fine). If `.git` already exists, leave it — do not destroy history.  
@@ -203,7 +201,7 @@ ln -sf .cursor/rules/general.mdc CLAUDE.md
 6. `/task-2-execute` and `/task-3-complete` must **hard-abort** when this tooling
    is later deleted — bootstrap must leave them unable to “pass” on tests alone.
 
-### 6b. Latest stable toolchain + packages (mandatory)
+### 6. Latest stable toolchain + packages (mandatory)
 
 1. Install or upgrade the project's **primary language** to the **latest stable**
    release available for the host OS/arch (use the package manager the user
@@ -217,7 +215,7 @@ ln -sf .cursor/rules/general.mdc CLAUDE.md
    with the pinned version — do not silently stay on stale toolchains when an
    upgrade is possible.  
 
-### 6c. `.gitignore` (mandatory)
+### 6b. `.gitignore` (mandatory)
 
 Create or update root **`.gitignore`**. Prefer
 `templates/seeds/gitignore/gitignore-SEED` / installed `planning/gitignore-SEED`
@@ -242,7 +240,7 @@ If `.gitignore` already exists: **merge** — add missing essential patterns; do
 wipe custom entries. Never commit real secrets to “fix” ignore gaps — fix the
 ignore file instead.
 
-### 7. Seed phases
+### 5. Seed phases
 
 1. Derive layered build order from the goal (Guide 02)  
 2. Write `planning/phases/INDEX.md` with T01…Tnn
@@ -257,7 +255,7 @@ It creates the minimal runnable program so that `make verify` passes:
 4. Final task should be E2E / holistic verification  
 5. Early tasks should include verify wiring / sample test+lint green if scaffold exists  
 
-### 8. Human README.md (mandatory)
+### 6. Human README.md (mandatory)
 
 Create or rewrite root **`README.md`** for humans (not a dump of agent rules).
 
@@ -284,10 +282,9 @@ README that contradicts the new goal. Keep factual content that still applies.
 aligned (execute/complete/dialectic should update human docs when the story for
 humans changed — not only `.mdc` files).
 
-### 9. Self-check
+### 7. Self-check
 
 - [ ] Routing Map ↔ rule files bijection  
-- [ ] `CLAUDE.md` symlink OK  
 - [ ] Git repo exists; root `Makefile` has `verify` (lint+test); lint config present;
       lefthook (or approved equivalent) installed and runs that verify on pre-commit
       (note: `make verify` may fail — no source code yet; T01 makes it pass)  
@@ -304,10 +301,10 @@ humans changed — not only `.mdc` files).
 - [ ] No task IDs or layer tables in general.mdc (INDEX.md is the sole source of truth)  
 - [ ] No product source code created (no `cmd/`, `internal/`, `pkg/`, `migrations/`)  
 - [ ] Installer leftovers cleaned (no `_TEMPLATE.md`, `verify-SEED/`, `README-SEED.md`, `gitignore-SEED` under `planning/`)  
-- [ ] `setup-tasks` skill present in `.claude/skills/` and listed in hub skills inventory  
+- [ ] `setup-tasks` skill present in `.cursor/skills/` and listed in hub skills inventory  
 - [ ] T01 is the app skeleton bootstrap task (module init, main.go, directory tree, `make verify` passes)  
 
-### 10. Output to user
+### 8. Output to user
 
 ```
 ## Bootstrap complete — {{PRODUCT}}

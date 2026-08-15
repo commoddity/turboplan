@@ -105,11 +105,10 @@ ${BOLD}Usage${RST}
 
 ${BOLD}What it does${RST}
   📦  Copies Turboplan ${DIM}templates/rules${RST}     →  ${DIM}.cursor/rules/${RST}
-  🧠  Copies Turboplan ${DIM}templates/skills${RST}    →  ${DIM}.claude/skills/${RST}
+  🧠  Copies Turboplan ${DIM}templates/skills${RST}    →  ${DIM}.cursor/skills/${RST}
   📋  Copies Turboplan ${DIM}templates/phases${RST}    →  ${DIM}planning/phases/${RST}
   🌱  Copies ${DIM}templates/seeds/${RST}              →  ${DIM}planning/*-SEED${RST}
        (readme · gitignore · verify → Makefile / lefthook / golangci)
-  🔗  Creates ${DIM}CLAUDE.md${RST} → ${DIM}.cursor/rules/general.mdc${RST}
 
 ${BOLD}Then${RST}
   Open the project and run ${MAG}/bootstrap-turboplan${RST} with your goal.
@@ -145,20 +144,20 @@ printf '%s\n' "  ${BOLD}📦  Pack${RST}    ${DIM}${PACK_ROOT}${RST}"
 printf '%s\n' "  ${DIM}══════════════════════════════════════════════════════════${RST}"
 echo
 
-TOTAL_STEPS=8
+TOTAL_STEPS=7
 STEP=0
 
 # --- step 1: dirs ------------------------------------------------------------
 spin_start "Creating project directories"
 mkdir -p \
   "${TARGET}/.cursor/rules" \
-  "${TARGET}/.claude/skills" \
+  "${TARGET}/.cursor/skills" \
   "${TARGET}/planning/phases" \
   "${TARGET}/planning/verify-SEED"
 sleep 2.5
 STEP=$((STEP + 1))
 spin_stop
-step_done "${STEP}" "${TOTAL_STEPS}" "📂" "Directories" ".cursor / .claude / planning"
+step_done "${STEP}" "${TOTAL_STEPS}" "📂" "Directories" ".cursor / planning"
 
 # --- step 2: rules -----------------------------------------------------------
 spin_start "Installing agent rules"
@@ -173,14 +172,14 @@ spin_start "Installing agent skills"
 shopt -s nullglob
 for skill_dir in "${PACK_ROOT}/templates/skills/"*/; do
   name="$(basename "${skill_dir}")"
-  mkdir -p "${TARGET}/.claude/skills/${name}"
-  cp -R "${skill_dir}." "${TARGET}/.claude/skills/${name}/"
+  mkdir -p "${TARGET}/.cursor/skills/${name}"
+  cp -R "${skill_dir}." "${TARGET}/.cursor/skills/${name}/"
 done
 shopt -u nullglob
 sleep 2.3
 STEP=$((STEP + 1))
 spin_stop
-step_done "${STEP}" "${TOTAL_STEPS}" "🧩" "Agent skills" ".claude/skills/"
+step_done "${STEP}" "${TOTAL_STEPS}" "🧩" "Agent skills" ".cursor/skills/"
 
 # --- step 4: phases ----------------------------------------------------------
 spin_start "Seeding phase INDEX + template"
@@ -220,17 +219,6 @@ STEP=$((STEP + 1))
 spin_stop
 step_done "${STEP}" "${TOTAL_STEPS}" "🧪" "Verify tooling" "Makefile / lefthook / golangci"
 
-# --- step 8: CLAUDE.md symlink -----------------------------------------------
-spin_start "Linking CLAUDE.md hub"
-(
-  cd "${TARGET}"
-  ln -sfn .cursor/rules/general.mdc CLAUDE.md
-)
-sleep 2.0
-STEP=$((STEP + 1))
-spin_stop
-step_done "${STEP}" "${TOTAL_STEPS}" "🔗" "CLAUDE.md symlink" "→ .cursor/rules/general.mdc"
-
 # --- finale (wizard-style framed summary) -------------------------------------
 echo
 
@@ -247,17 +235,16 @@ printf '    %s\n\n' "${WHT}${TARGET}${RST}"
 
 printf '%s\n' "  ${BOLD}${WHT}🧪  Quick verify${RST}"
 printf '    %s\n' "${DIM}ls ${TARGET}/.cursor/rules${RST}"
-printf '    %s\n' "${DIM}ls ${TARGET}/.claude/skills${RST}"
+printf '    %s\n' "${DIM}ls ${TARGET}/.cursor/skills${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/README-SEED.md && echo README-SEED ok${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/gitignore-SEED && echo gitignore-SEED ok${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/verify-SEED/Makefile && echo verify-SEED ok${RST}"
-printf '    %s\n' "${DIM}readlink ${TARGET}/CLAUDE.md${RST}"
 echo
 
 # -- numbered next steps like wizard -------------------------------------------
 printf '%s\n' "  ${BOLD}${WHT}🚀  Next steps${RST}"
 echo
-printf '%s\n' "  ${BOLD}${WHT}1️⃣${RST}   Open the project in Cursor / Claude Code"
+printf '%s\n' "  ${BOLD}${WHT}1️⃣${RST}   Open the project in Cursor"
 printf '    %s\n\n' "${DIM}That's where the agent reads the rules you just installed.${RST}"
 printf '%s\n' "  ${BOLD}${WHT}2️⃣${RST}   Run ${MAG}/bootstrap-turboplan${RST} with your goal"
 printf '    %s\n\n' "${DIM}The agent will ask for a detailed goal, technical scope, and constraints.${RST}"

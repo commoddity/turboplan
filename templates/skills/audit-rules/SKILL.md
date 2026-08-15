@@ -1,8 +1,8 @@
 ---
 name: audit-rules
 description: >
-  Read-only audit of .cursor/rules/*.mdc and .claude/skills/*/SKILL.md against
-  the codebase. Flags staleness, contradictions, missing routing, broken symlink.
+  Read-only audit of .cursor/rules/*.mdc and .cursor/skills/*/SKILL.md against
+  the codebase. Flags staleness, contradictions, missing routing.
   Never auto-removes content.
 disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob
@@ -38,9 +38,7 @@ Extract from every skill: frontmatter, path refs, tool allowances.
 ## Phase 3 — Structural audit
 
 - Routing Map ↔ actual `.cursor/rules/*.mdc`  
-- Skills inventory in hub ↔ `.claude/skills/*/`  
-- `CLAUDE.md` symlink → `.cursor/rules/general.mdc`  
-- `.claude/rules/` must **not** exist  
+- Skills inventory in hub ↔ `.cursor/skills/*/`  
 - **Hub fidelity:** `general.mdc` still contains **Karpathy Behavioral Guidelines**
   (four sections), **Project Architecture**, **Delivery Principles**, and
   **Rule Maintenance** steps **0–7**. If bootstrap stripped these → `MISSING` /
