@@ -7,12 +7,16 @@
 **Turboplan** is a drop-in methodology pack for long-horizon software work with
 Cursor.
 
-Two entry points:
+Two entry points, each preceded by the same grill:
 
-| When                               | Use                                                                                                                    |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| **New project** (greenfield)       | [`/bootstrap-turboplan`](METHODOLOGY.md#-two-entry-points)                                                             |
-| **New feature** (existing project) | [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning) → [`/setup-tasks`](METHODOLOGY.md#-two-entry-points) |
+| When                               | Use                                                                                                                              |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **New project** (greenfield)       | [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning) → [`/bootstrap-turboplan`](METHODOLOGY.md#-two-entry-points)   |
+| **New feature** (existing project) | [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning) → [`/setup-tasks`](METHODOLOGY.md#-two-entry-points)           |
+
+`/grill-me` is the universal first step for any idea — most valuable in
+greenfield work, where nothing exists yet and every unspoken assumption is
+still on the table.
 
 - **One install script** — copies rules, skills, and phase templates into your repo
 - **Grill the idea first** — `/grill-me` interviews you over a design tree until nothing is silently assumed
@@ -72,9 +76,13 @@ The script copies rules, skills, and phase templates into your repo.
 Then:
 
 1. Open `YOUR_PROJECT` in Cursor
-2. Run `/bootstrap-turboplan` 
+2. Run `/grill-me` (💡 use a `large` model, see [Model recommendations](#model-recommendations)) 
    
-   a. 💡 Use a `large` model - see [Model recommendations](#model-recommendations). This step requires complex reasoning.
+   a. This stress-tests the idea in rounds over a design tree — facts via sub-agents, decisions via you — before any planning happens. Most valuable on greenfield work, where nothing is settled yet.
+
+3. Run `/bootstrap-turboplan` 
+   
+   a. 💡 Use a `large` model — this step requires complex reasoning.
    
    b. The agent will ask for a detailed goal, technical scope, and constraints before building anything.
    
@@ -108,11 +116,14 @@ flowchart TD
     C -->|"push + Manual test + next branch"| P
 ```
 
-For **new features** after the MVP is done, first run [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning):
-it interrogates the idea in rounds over a design tree (facts via sub-agents,
-decisions via the human) until a shared-understanding summary is confirmed.
-Then use `/setup-tasks` — it reads current rules and INDEX plus the settled
-grilling decisions, then proposes new phase stubs without disturbing existing infrastructure.
+Every idea starts with the same grill: [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning)
+interrogates it in rounds over a design tree (facts via sub-agents, decisions
+via the human) until a shared-understanding summary is confirmed — most
+valuable on greenfield work, where nothing is settled yet. Then:
+
+- **New project** → `/bootstrap-turboplan`, which turns the settled goal into rules + phases.
+- **New feature** → `/setup-tasks`, which reads current rules and INDEX plus the
+  settled grilling decisions, then proposes new phase stubs without disturbing existing infrastructure.
 
 Plans will be **handoff-ready** for a lesser execute agent (see hub "[Model split](METHODOLOGY.md#model-split)").
 Only flag large-model execute when the task is exceptionally hard.

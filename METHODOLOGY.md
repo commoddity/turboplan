@@ -19,19 +19,21 @@ slice the goal into phases, and loop plan → execute → complete until done.
 
 ## 🚪 Two entry points
 
+Every idea is grilled first — `/grill-me` is the universal front-door. It is
+most valuable on greenfield work, where nothing exists yet and every unspoken
+assumption is still on the table.
+
 | When                               | Use                    | What it does                                                                                                              |
 | ---------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **New project** (greenfield)       | `/bootstrap-turboplan` | Adapts rules, creates layered phases, ships verify gate, writes README — gets you to a **ready-to-build MVP**             |
+| **New project** (greenfield)       | `/grill-me` → `/bootstrap-turboplan` | `/grill-me` stress-tests the idea to a settled shared understanding; `/bootstrap-turboplan` adapts rules, creates layered phases, ships verify gate, writes README — a **ready-to-build MVP** |
 | **New feature** (existing project) | `/grill-me` → `/setup-tasks` | `/grill-me` stress-tests the idea to a settled shared understanding; `/setup-tasks` turns it into new phase stubs without disturbing existing infrastructure |
 
 ```mermaid
 flowchart TD
-    A[Goal / Feature idea] --> GA{Grill first?}
-    GA -->|Feature| GR["grill-me (design tree → shared understanding)"]
-    GA -->|Greenfield| B{Bootstrapped?}
-    B -->|No| C[bootstrap-turboplan]
-    B -->|Yes| D[setup-tasks]
-    GR --> D
+    A[Goal / Feature idea] --> GR["grill-me (design tree → shared understanding)"]
+    GR --> B{New project?}
+    B -->|Yes| C[bootstrap-turboplan]
+    B -->|No| D[setup-tasks]
     C --> E["INDEX.md + rules + skills"]
     D --> E
     E --> F["task-1-plan TXX"]
@@ -92,7 +94,7 @@ flowchart LR
 
 | Skill                     | When                            | Recommended model                                                         | Does                                                                              |
 | ------------------------- | ------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `/grill-me`               | Before `/setup-tasks`           | Large                                                                     | Design-tree interview in rounds until shared understanding; facts via sub-agents |
+| `/grill-me`               | Before `/bootstrap-turboplan` or `/setup-tasks` | Large                                                                     | Design-tree interview in rounds until shared understanding; facts via sub-agents |
 | `/bootstrap-turboplan`    | New project                     | Large                                                                     | Goal → rules + phases + README + verify gate                                      |
 | `/setup-tasks`            | New feature in existing project | Large                                                                     | Context → new phase stubs appended to INDEX                                       |
 | `/task-1-plan TXX`        | Before coding                   | Medium (large only for complex tasks)                                     | Reality-check; handoff-ready plan for execute agent                               |
@@ -161,12 +163,14 @@ human hasn't thought it through yet.
 
 ---
 
-## 🔥 Grilling (between idea and planning)
+## 🔥 Grilling (before planning — for any idea)
 
-`/grill-me` is the interrogator that runs **before** `/setup-tasks` (and
-optionally before `/bootstrap-turboplan`). It converts a rough idea into a
-**settled design tree** so the planning skill starts from shared understanding
-instead of guesses.
+`/grill-me` is the interrogator that runs **first** — before
+`/bootstrap-turboplan` for a new project, or before `/setup-tasks` for a new
+feature. It converts a rough idea into a **settled design tree** so the
+planning skill starts from shared understanding instead of guesses. It pays off
+everywhere, but is most valuable on **greenfield / brand-new projects**, where
+nothing exists yet and every unspoken assumption is still open.
 
 **Design tree:** every decision branches into the decisions that hang off it.
 The session works the tree in **rounds**. The **frontier** is every decision
