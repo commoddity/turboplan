@@ -165,6 +165,8 @@ human hasn't thought it through yet.
 
 ## 🔥 Grilling (before planning — for any idea)
 
+Inspired by [Matt Pocock's grill-me skill](https://www.aihero.dev/skills-grill-me).
+
 `/grill-me` is the interrogator that runs **first** — before
 `/bootstrap-turboplan` for a new project, or before `/setup-tasks` for a new
 feature. It converts a rough idea into a **settled design tree** so the
