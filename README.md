@@ -9,10 +9,10 @@ Cursor.
 
 Two entry points, each preceded by the same grill:
 
-| When                               | Use                                                                                                                              |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **New project** (greenfield)       | [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning) → [`/bootstrap-turboplan`](METHODOLOGY.md#-two-entry-points)   |
-| **New feature** (existing project) | [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning) → [`/setup-tasks`](METHODOLOGY.md#-two-entry-points)           |
+| When                               | Use                                                                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **New project** (greenfield)       | [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning) → [`/bootstrap-turboplan`](METHODOLOGY.md#-two-entry-points) |
+| **New feature** (existing project) | [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning) → [`/setup-tasks`](METHODOLOGY.md#-two-entry-points)         |
 
 `/grill-me` is the universal first step for any idea — most valuable in
 greenfield work, where nothing exists yet and every unspoken assumption is
@@ -96,11 +96,11 @@ Then:
 
 Where "large", "medium", and "small" appear throughout the docs, they refer to:
 
-| Size       | Provider & Model                                                       |
-| ---------- | ---------------------------------------------------------------------- |
-| **Large**  | [Kimi K3](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)      |
-| **Medium** | [DeepSeek V4 Pro](https://api-docs.deepseek.com/quick_start/pricing)   |
-| **Small**  | [DeepSeek V4 Flash](https://api-docs.deepseek.com/quick_start/pricing) |
+| Size       | Provider & Model                                                                                                     |
+| ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Large**  | [Kimi K3](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart) or [GLM-5.3](https://docs.z.ai/guides/llm/glm-5.3) |
+| **Medium** | [DeepSeek V4 Pro](https://api-docs.deepseek.com/quick_start/pricing)                                                 |
+| **Small**  | [DeepSeek V4 Flash](https://api-docs.deepseek.com/quick_start/pricing)                                               |
 
 > 💡 **These are recommendations, not hard rules.** Use the best model you have
 > access to that fits the task's complexity budget.
@@ -133,13 +133,13 @@ Only flag large-model execute when the task is exceptionally hard.
 See [Model recommendations](#model-recommendations) for the specific providers and models
 behind each size tier.
 
-| Skill                                   | Recommended model                                                                                                                                        |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/grill-me`                             | [Large](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)                                                                                          |
-| `/bootstrap-turboplan` / `/setup-tasks` | [Large](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)                                                                                          |
-| `/task-1-plan`                          | [Medium](https://api-docs.deepseek.com/quick_start/pricing) (use [large](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart) only for complex tasks) |
-| `/task-2-execute`                       | [Medium](https://api-docs.deepseek.com/quick_start/pricing) or [small](https://api-docs.deepseek.com/quick_start/pricing)                                |
-| `/task-3-complete`                      | [Medium](https://api-docs.deepseek.com/quick_start/pricing) or [small](https://api-docs.deepseek.com/quick_start/pricing)                                |
+| Skill                                   | Recommended model                         |
+| --------------------------------------- | ----------------------------------------- |
+| `/grill-me`                             | Large                                     |
+| `/bootstrap-turboplan` / `/setup-tasks` | Large                                     |
+| `/task-1-plan`                          | Medium (use large only for complex tasks) |
+| `/task-2-execute`                       | Medium or small                           |
+| `/task-3-complete`                      | Medium or small                           |
 
 > 💡 **This is a recommendation, not a hard rule.** Use the largest model you have
 > access to when the task warrants it; scale down when mechanical execution suffices.
