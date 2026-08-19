@@ -9,9 +9,9 @@ Cursor.
 
 Two entry points:
 
-| When                               | Use                                                        |
-| ---------------------------------- | ---------------------------------------------------------- |
-| **New project** (greenfield)       | [`/bootstrap-turboplan`](METHODOLOGY.md#-two-entry-points) |
+| When                               | Use                                                                                                                    |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **New project** (greenfield)       | [`/bootstrap-turboplan`](METHODOLOGY.md#-two-entry-points)                                                             |
 | **New feature** (existing project) | [`/grill-me`](METHODOLOGY.md#-grilling-between-idea-and-planning) → [`/setup-tasks`](METHODOLOGY.md#-two-entry-points) |
 
 - **One install script** — copies rules, skills, and phase templates into your repo
@@ -28,9 +28,7 @@ Two entry points:
 
 - [⚡ Quickstart](#-quickstart)
 - [🔁 Running the Work Loop](#-running-the-work-loop)
-  - [Model split](#model-split)
-  - [🔌 Cursor Configuration](#-cursor-configuration)
-  - [Model recommendations](#model-recommendations)
+- [🔌 Cursor Configuration](#-cursor-configuration)
 - [🛡️ Hard Rules](#️-hard-rules)
 - [🌀 Dialectic of Cognition Methodology](#-dialectic-of-cognition-methodology)
   - [📕 Influence: Mao's *On Practice* (1937)](#-influence-maos-on-practice-1937)
@@ -41,7 +39,7 @@ Two entry points:
 
 ### 📢 Public Service Announcement: <!-- omit in toc -->
 
-> **To avoid using and paying for 🇺🇸 AI providers like [Anthropic](https://www.scmp.com/news/china/science/article/3346519/deadly-strike-iranian-primary-school-raises-questions-about-ai-accountability), it is recommended to configure your coding agents to use alternative backends such as [DeepSeek](https://api-docs.deepseek.com/) *(most cost effective)* or [Moonshot AI](https://platform.kimi.ai/docs/api/overview) *(most intelligent their Kimi K3 model)*.**
+> **To avoid using and paying for 🇺🇸 AI providers like [Anthropic](https://www.scmp.com/news/china/science/article/3346519/deadly-strike-iranian-primary-school-raises-questions-about-ai-accountability), it is recommended to configure your coding agents to use alternative backends such as [DeepSeek](https://api-docs.deepseek.com/) *(most cost effective with `v4-pro` and `v4-flash`)*, [Moonshot AI](https://platform.kimi.ai/docs/api/overview) *(most intelligent with `kimi-k3`)* or [Thaura](https://thaura.ai/story) *(most ethical - made with [Tech for Palestine](https://techforpalestine.org))*.**
 >
 >
 > 1️⃣ **Cursor** — Use [commoddity/discursive](https://github.com/commoddity/discursive)
@@ -52,7 +50,7 @@ Two entry points:
 > </div>
 > </a>
 >
-> A custom gateway proxy that enables Cursor's full agentic and tool calling capabilities with Moonshot Kimi and/or DeepSeek.
+> A custom gateway proxy that enables Cursor's full agentic and tool calling capabilities with Moonshot Kimi, Z.ai, DeepSeek and Thaura.
 
 
 ## ⚡ Quickstart
@@ -76,13 +74,28 @@ Then:
 1. Open `YOUR_PROJECT` in Cursor
 2. Run `/bootstrap-turboplan` 
    
-   a. The agent will ask for a detailed goal, technical scope, and constraints before building anything.
+   a. 💡 Use a `large` model - see [Model recommendations](#model-recommendations). This step requires complex reasoning.
    
-   b. This is your chance to outline the project's architecture, and high level goals. 
+   b. The agent will ask for a detailed goal, technical scope, and constraints before building anything.
    
-   c. ❕ BE THOROUGH; the input here will play a major role in the quality of the output.
-3. Once it has completed, review the architecture, layer order, and README the agent produced.
-4. You are now ready to run the **work loop** and begin building your project. 💫
+   c. This is your chance to outline the project's architecture, and high level goals. 
+   
+   d. ❕ BE THOROUGH; the input here will play a major role in the quality of the output.
+4. Once it has completed, review the architecture, layer order, and README the agent produced.
+5. You are now ready to run the **work loop** and begin building your project. 💫
+
+### 🛠️ Model recommendations <!-- omit in toc -->
+
+Where "large", "medium", and "small" appear throughout the docs, they refer to:
+
+| Size       | Provider & Model                                                       |
+| ---------- | ---------------------------------------------------------------------- |
+| **Large**  | [Kimi K3](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)      |
+| **Medium** | [DeepSeek V4 Pro](https://api-docs.deepseek.com/quick_start/pricing)   |
+| **Small**  | [DeepSeek V4 Flash](https://api-docs.deepseek.com/quick_start/pricing) |
+
+> 💡 **These are recommendations, not hard rules.** Use the best model you have
+> access to that fits the task's complexity budget.
 
 ## 🔁 Running the Work Loop
 
@@ -109,13 +122,13 @@ Only flag large-model execute when the task is exceptionally hard.
 See [Model recommendations](#model-recommendations) for the specific providers and models
 behind each size tier.
 
-| Skill                                   | Recommended model                                                                                                     |
-| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `/grill-me`                             | [Large](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)                                                      |
-| `/bootstrap-turboplan` / `/setup-tasks` | [Large](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)                                                       |
+| Skill                                   | Recommended model                                                                                                                                        |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/grill-me`                             | [Large](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)                                                                                          |
+| `/bootstrap-turboplan` / `/setup-tasks` | [Large](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)                                                                                          |
 | `/task-1-plan`                          | [Medium](https://api-docs.deepseek.com/quick_start/pricing) (use [large](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart) only for complex tasks) |
-| `/task-2-execute`                       | [Medium](https://api-docs.deepseek.com/quick_start/pricing) or [small](https://api-docs.deepseek.com/quick_start/pricing) |
-| `/task-3-complete`                      | [Medium](https://api-docs.deepseek.com/quick_start/pricing) or [small](https://api-docs.deepseek.com/quick_start/pricing) |
+| `/task-2-execute`                       | [Medium](https://api-docs.deepseek.com/quick_start/pricing) or [small](https://api-docs.deepseek.com/quick_start/pricing)                                |
+| `/task-3-complete`                      | [Medium](https://api-docs.deepseek.com/quick_start/pricing) or [small](https://api-docs.deepseek.com/quick_start/pricing)                                |
 
 > 💡 **This is a recommendation, not a hard rule.** Use the largest model you have
 > access to when the task warrants it; scale down when mechanical execution suffices.
@@ -133,21 +146,6 @@ This workflow is built for **Cursor**. After install, a project has:
 
 Combined with the hub's routing map, the evolving `.cursor/rules/*.mdc` files are maintained by `/dialectic-of-cognition`.
 
-### Model recommendations <!-- omit in toc -->
-
-Where "large", "medium", and "small" appear throughout the docs, they refer to:
-
-| Size | Provider & Model |
-| ---- | ---------------- |
-| **Large** | [Kimi K3](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart) |
-| **Medium** | [DeepSeek V4 Pro](https://api-docs.deepseek.com/quick_start/pricing) |
-| **Small** | [DeepSeek V4 Flash](https://api-docs.deepseek.com/quick_start/pricing) |
-
-> 💡 **These are recommendations, not hard rules.** Use the best model you have
-> access to that fits the task's complexity budget.
-
----
-
 ## 🛡️ Hard Rules
 
 - ❌ **Do not** create rules anywhere but `.cursor/rules/`. Skills live in `.cursor/skills/`.
@@ -160,8 +158,6 @@ Where "large", "medium", and "small" appear throughout the docs, they refer to:
 - 👥 **Rules/skills = agents; README = humans** — both evolve; keep Dependencies & docs
   and architecture narrative aligned with `.cursor/rules/` as the project grows.
 
----
-
 ## 🌀 Dialectic of Cognition Methodology
 
 <p align="center">
@@ -172,8 +168,6 @@ Where "large", "medium", and "small" appear throughout the docs, they refer to:
 
 > *From the particular to the general, then from the general to the particular.*
 
----
-
 In agent terms:
 
 1. **Particular → general** — A concrete bug or change (symptoms, failed attempts, docs consulted) is abstracted into a **problem class**, not a one-off anecdote.
@@ -181,8 +175,6 @@ In agent terms:
 3. **Verify in practice** — A cold read of the new entry must be enough to spot the symptom and apply the fix. If not, refine until practice would confirm it.
 
 Abort gate before encoding: *can you state the rule without naming a specific file, function, class, variable, or endpoint?* If not, there is nothing generalizable to store — the value stays in the diff.
-
----
 
 ### Guidelines <!-- omit in toc -->
 
@@ -212,8 +204,6 @@ The hub also carries always-on cores that dialectic does **not** replace:
   **repo root** + `lefthook install`).
 
 See [`METHODOLOGY.md`](METHODOLOGY.md)
-
----
 
 ### 📕 Influence: Mao's *On Practice* (1937)
 
@@ -248,8 +238,6 @@ Authority: Rule Maintenance in the installed `general.mdc`. Invoke manually afte
 - **Shared** — Prefer refining overlapping entries over proliferating duplicates; propose a human-approved split if a rule file exceeds ~600 lines (earlier if approaching ~550); timestamp `<!-- last-verified: YYYY-MM -->`; review entries older than six months when working in that domain.
 
 If Modes A/B find nothing: *"Nothing to capture — session was routine."*
-
----
 
 ## 📂 Files and Directories
 
