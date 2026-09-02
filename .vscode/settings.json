@@ -1,0 +1,7 @@
+{
+  "markdown.extension.toc.updateOnSave": false,
+  "markdown.extension.toc.levels": "2..2",
+  "[markdown]": {
+    "editor.formatOnSave": false
+  }
+}

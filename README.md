@@ -1,10 +1,10 @@
 ![Turboplan](.github/img/turboplan.png)
 
-# 🧠 Introduction <!-- omit in toc -->
+**🧠 Introduction**
 
-**Turboplan** is a drop-in methodology pack for long-horizon software work with [Cursor](https://cursor.com/docs).
+**Turboplan** is a drop-in methodology pack for agentic long-horizon software work with [Cursor](https://cursor.com/docs).
 
-It allows planning of complex software engineering features and tasks using a structured methodology that learns and builds a unique knowledge base for the specific product or codebase as it progresses.
+It allows planning and execution of complex software engineering features using a structured methodology that captures a unique knowledge base for the specific product or codebase as it progresses.
 
 - 📦 **One install** — copies rules, skills, and phase templates into your repo
 - 🔥 **Grill first** — `/grill-me` interviews you until nothing is silently assumed
@@ -14,15 +14,14 @@ It allows planning of complex software engineering features and tasks using a st
 - ♻️ **Evolve as you learn** — hard-won patterns get captured back into the rules
 - 🧩 **Product-agnostic** — no sample product bundled; adapts to your stack
 
-# 📖 Methodology <!-- omit in toc -->
+
+
+**📖 Methodology**
 
 > [💡 For full methodology details, see METHODOLOGY.md](METHODOLOGY.md).
 
+**📋 Table of Contents**
 
-
-## Table of Contents 
-
-- [Table of Contents](#table-of-contents)
 - [⚡ Quickstart](#-quickstart)
 - [🔁 Running the Work Loop](#-running-the-work-loop)
 - [🔌 Cursor Configuration](#-cursor-configuration)
@@ -30,7 +29,11 @@ It allows planning of complex software engineering features and tasks using a st
 - [🌀 Dialectic of Cognition Methodology](#-dialectic-of-cognition-methodology)
 - [📂 Files and Directories](#-files-and-directories)
 
+
+
 ---
+
+
 
 ## ⚡ Quickstart
 
@@ -46,18 +49,16 @@ The script copies rules, skills, and phase templates into your repo.
 ![Installing Turboplan](.github/img/turboplan.gif)  
 *Installing Turboplan*
 
-Then:
+Then (install only copies generic Turboplan scaffolding — `/grill-me` grills your **idea**, not product code):
 
 1. Open `YOUR_PROJECT` in Cursor
-2. Run `/grill-me` (💡 use a `large` model, see [Model recommendations](#model-recommendations))
-  a. This stress-tests the idea in rounds over a design tree — facts via sub-agents, decisions via you — before any planning happens. Most valuable on greenfield work, where nothing is settled yet.
-3. Run `/bootstrap-turboplan`
-  a. 💡 Use a `large` model — this step requires complex reasoning.
-   b. The agent will ask for a detailed goal, technical scope, and constraints before building anything.
-   c. This is your chance to outline the project's architecture, and high level goals. 
-   d. ❕ BE THOROUGH; the input here will play a major role in the quality of the output.
-4. Once it has completed, review the architecture, layer order, and README the agent produced.
-5. You are now ready to run the **work loop** and begin building your project. 💫
+2. Run `/grill-me` (💡 `large` model — see [Model recommendations](#model-recommendations)) — stress-tests assumptions in rounds; outputs a confirmed summary for step 3
+3. Run **`/bootstrap-turboplan`** (new project) or **`/setup-tasks`** (existing project — new phases without rebuilding infrastructure)
+  - 💡 `large` model — complex reasoning; pass the grill summary as context
+  - ❕ BE THOROUGH — this input drives rules, phases, and README quality
+4. Review the architecture, layer order, and README the agent produced
+5. Enter the **work loop** and begin building 💫
+
 
 
 ## 🔁 Running the Work Loop
@@ -73,7 +74,7 @@ flowchart TD
 
 
 
-Every idea starts with the same grill: `[/grill-me](METHODOLOGY.md#-grilling-between-idea-and-planning)`
+Every idea starts with the same grill: [/grill-me](METHODOLOGY.md#-grilling-between-idea-and-planning)
 interrogates it in rounds over a design tree (facts via sub-agents, decisions
 via the human) until a shared-understanding summary is confirmed — most
 valuable on greenfield work, where nothing is settled yet. Then:
@@ -85,7 +86,9 @@ settled grilling decisions, then proposes new phase stubs without disturbing exi
 Plans will be **handoff-ready** for a lesser execute agent (see hub "[Model split](METHODOLOGY.md#model-split)").
 Only flag large-model execute when the task is exceptionally hard.
 
-### Model split <!-- omit in toc -->
+
+
+### Model split
 
 See [Model recommendations](#model-recommendations) for the specific providers and models
 behind each size tier.
@@ -95,7 +98,7 @@ behind each size tier.
 | --------------------------------------- | ----------------------------------------- |
 | `/grill-me`                             | Large                                     |
 | `/bootstrap-turboplan` / `/setup-tasks` | Large                                     |
-| `/task-1-plan`                          | Medium (use large only for complex tasks) |
+| `/task-1-plan`                          | Medium or large |
 | `/task-2-execute`                       | Medium or small                           |
 | `/task-3-complete`                      | Medium or small                           |
 
@@ -103,7 +106,7 @@ behind each size tier.
 > 💡 **This is a recommendation, not a hard rule.** Use the largest model you have
 > access to when the task warrants it; scale down when mechanical execution suffices.
 
-> For full work loop details see `[METHODOLOGY.md#-running-the-loop](METHODOLOGY.md#-running-the-loop)`.
+> For full work loop details see [METHODOLOGY.md#-running-the-loop](METHODOLOGY.md#-running-the-loop).
 > For how skills delegate to subagents see
 > `METHODOLOGY.md` [— Subagent delegation](METHODOLOGY.md#4--subagent-delegation).
 
@@ -131,26 +134,27 @@ phases + skills wiring + dependency spokes from docs + human `README.md` +
 and architecture narrative aligned with `.cursor/rules/` as the project grows.
 
 
-### 🛠️ Model recommendations <!-- omit in toc -->
 
-### 📢 Public Service Announcement: <!-- omit in toc -->
+### 🛠️ Model recommendations
 
-> If you would prefer to avoid paying for 🇺🇸 AI providers like [Anthropic](https://www.theguardian.com/news/2026/mar/26/ai-got-the-blame-for-the-iran-school-bombing-the-truth-is-far-more-worrying), you can configure your coding agents to use alternative backends with [commoddity/discursive](https://github.com/commoddity/discursive).
+
+
+### 📢 Public Service Announcement
+
+> If you would prefer to use alternative AI providers with Cursor, you can use [commoddity/discursive](https://github.com/commoddity/discursive).
 >
 > ![Discursive](.github/img/Discursive.png)
 >
-> A custom gateway proxy that enables Cursor's full agentic and tool calling capabilities with Z.ai, DeepSeek, Moonshot and Thaura.
-
-
+> Discursive is a custom gateway proxy that enables Cursor's full agentic and tool calling capabilities with Z.ai, DeepSeek, Moonshot and Thaura.
 
 Where "large", "medium", and "small" appear throughout the docs, they refer to:
 
 
-| Size       | Provider & Model                                                                                                     |
-| ---------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Large**  | [Kimi K3](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart) or [GLM-5.3](https://docs.z.ai/guides/llm/glm-5.3) |
-| **Medium** | [DeepSeek V4 Pro](https://api-docs.deepseek.com/quick_start/pricing)                                                 |
-| **Small**  | [DeepSeek V4 Flash](https://api-docs.deepseek.com/quick_start/pricing)                                               |
+| Size       | Provider & Model                                                                                                                      |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Large**  | [GLM-5.3](https://docs.z.ai/guides/llm/glm-5.3) or [Kimi K3](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)                  |
+| **Medium** | [DeepSeek V4 Pro](https://api-docs.deepseek.com/quick_start/pricing)                                                                  |
+| **Small**  | [DeepSeek V4 Flash](https://api-docs.deepseek.com/quick_start/pricing) or [GLM-5.3 Flash](https://docs.z.ai/guides/llm/glm-5.3-flash) |
 
 
 > 💡 **These are recommendations, not hard rules.** Use the best model you have
@@ -158,13 +162,11 @@ Where "large", "medium", and "small" appear throughout the docs, they refer to:
 
 
 
-
-
 ## 🌀 Dialectic of Cognition Methodology
 
 
 
-### 📣 Motto <!-- omit in toc -->
+### 📣 Motto
 
 > *From the particular to the general, then from the general to the particular.*
 
@@ -176,7 +178,9 @@ In agent terms:
 
 Abort gate before encoding: *can you state the rule without naming a specific file, function, class, variable, or endpoint?* If not, there is nothing generalizable to store — the value stays in the diff.
 
-### Guidelines <!-- omit in toc -->
+
+
+### Guidelines
 
 Installed projects do not treat `.cursor/rules/` as a frozen style guide.
 They treat it as a **living knowledge base** produced by working on the stack —
@@ -205,13 +209,13 @@ Bootstrap ships this to the project root (from `templates/seeds/verify/` →
 
 See `[METHODOLOGY.md](METHODOLOGY.md)`
 
-### 📕 Influence: *On Practice* (1937) <!-- omit in toc -->
+
+
+### 📕 Influence: *On Practice* (1937)
 
 The maintenance loop is deliberately patterned on the famous 1937 essay **"On Practice: On the Relation Between Knowledge and Practice, Between Knowing and Doing"**. The essay's argument is epistemological, not decorative: knowledge that never returns to practice becomes dogma; practice that never rises to theory stays a pile of anecdotes.
 
-**Primary text:** [Selected Works, Vol. 1, *On Practice](https://www.marxists.org/reference/archive/mao/selected-works/volume-1/mswv1_16.htm)*
-
-**Accessible overview:** [PolSci Institute — *On Practice*: Epistemology and Theory of Knowledge](https://polsci.institute/political-theory/mao-epistemology-theory-of-knowledge/)
+**Overview of the text:** [PolSci Institute — *On Practice*: Epistemology and Theory of Knowledge](https://polsci.institute/political-theory/mao-epistemology-theory-of-knowledge/)
 
 Mapped onto this workflow:
 
@@ -231,7 +235,9 @@ Closing line of the essay (the spiral of cognition):
 
 That is the philosophical warrant for treating `.cursor/rules/` as a **material product of work on a stack** — not a static style guide dropped from outside.
 
-### 🧰 What `/dialectic-of-cognition` does (summary) <!-- omit in toc -->
+
+
+### 🧰 What `/dialectic-of-cognition` does (summary)
 
 Authority: Rule Maintenance in the installed `general.mdc`. Invoke manually after non-trivial sessions; `/task-3-complete` runs it as part of close-out.
 
