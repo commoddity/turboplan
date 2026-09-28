@@ -231,11 +231,17 @@ See `[METHODOLOGY.md](METHODOLOGY.md)`
 
 
 
-### 📕 Influence: *On Practice* (1937)
+### 📕 Influence: Mao's *On Practice* (1937)
 
-The maintenance loop is deliberately patterned on the famous 1937 essay **"On Practice: On the Relation Between Knowledge and Practice, Between Knowing and Doing"**. The essay's argument is epistemological, not decorative: knowledge that never returns to practice becomes dogma; practice that never rises to theory stays a pile of anecdotes.
+<p align="center">
+  <img src=".github/img/mao.png" alt="If we have a correct theory but merely prate about it, pigeonhole it and do not put it into practice, then that theory, however good, is of no significance. — Mao Zedong" width="500" />
+</p>
 
-**Overview of the text:** [PolSci Institute — *On Practice*: Epistemology and Theory of Knowledge](https://polsci.institute/political-theory/mao-epistemology-theory-of-knowledge/)
+The maintenance loop is deliberately patterned on Mao Zedong's Marxist epistemology in **"On Practice: On the Relation Between Knowledge and Practice, Between Knowing and Doing"** (July 1937) — written amid the Yan'an period, when the Chinese Communists were rebuilding strategy from lived struggle rather than importing ready-made formulas. The essay's argument is epistemological, not decorative: knowledge that never returns to practice becomes dogma; practice that never rises to theory stays a pile of anecdotes.
+
+**Primary text:** [marxists.org — Selected Works, Vol. 1, *On Practice*](https://www.marxists.org/reference/archive/mao/selected-works/volume-1/mswv1_16.htm)
+
+**Accessible overview:** [PolSci Institute — *On Practice*: Mao's Epistemology and Theory of Knowledge](https://polsci.institute/political-theory/mao-epistemology-theory-of-knowledge/)
 
 Mapped onto this workflow:
 
