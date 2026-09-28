@@ -1,0 +1,26 @@
+---
+description: Public surface this task is removing. Copy into .cursor/rules only when a task retires that surface, then set globs.
+globs: {{DEPRECATION_GLOBS}}
+alwaysApply: false
+---
+
+# Deprecation
+
+This file is a seed at `planning/spoke-seeds/deprecation.mdc`. It is not a live rule until a task removes or replaces a public surface. Then copy it to `.cursor/rules/deprecation.mdc`, set the globs, and add one row to the hub craft table.
+
+## Invariants
+
+1. Callers of the old surface are listed before the removal.
+2. The replacement is named, or the intent file says there is no replacement.
+3. Remove in the task that owns the removal. Do not delete an unused public symbol while editing an unrelated slice.
+4. A break for external callers is a decision in the intent file or in `decisions.mdc` when plan names that file.
+
+## Problem classes
+
+### `Public symbol removed beside an unrelated edit`
+
+| Symptom | Cause | Fix |
+| ------- | ----- | --- |
+| A caller outside this task fails | A deletion was mixed into a feature slice | Restore the symbol. Schedule the removal as its own task with this spoke. |
+
+<!-- last-verified: YYYY-MM -->

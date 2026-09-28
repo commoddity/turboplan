@@ -1,0 +1,18 @@
+---
+description: Moment spoke. Read only when /task-2-execute names this file after verify fails. Do not open at the start of a task.
+alwaysApply: false
+---
+
+# Debug
+
+`/task-2-execute` opens this file when `make verify` fails. No other step opens it.
+
+1. **Reproduce.** Run the failing command and keep the output.
+2. **Localize.** Find the smallest input or test that still fails.
+3. **Reduce.** Name one cause.
+4. **Fix.** Change that cause.
+5. **Guard.** A test fails without the fix and passes with it.
+
+A wrong plan is not a failed edit. Set the task `Blocked` and send it back to `/task-1-plan`. Do not design a replacement here.
+
+Do not commit a red tree. The next commit is the green slice, with the next `Fnn Tnn Sn` subject.

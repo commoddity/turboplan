@@ -1,10 +1,11 @@
 ---
 name: bootstrap-turboplan
 description: >
-  From a written product goal, adapt .cursor/rules and .cursor/skills, seed
-  planning/phases, create dependency rule spokes from
-  provided docs, write a human README.md, and an appropriate .gitignore.
-  Manual only — /bootstrap-turboplan. Does not implement product features.
+  From a confirmed planning/intents/Fnn.md, adapt .cursor/rules and
+  .cursor/skills, seed planning/phases with feature ids and slice shape,
+  create dependency rule spokes from docs you open, write a human README.md,
+  and an appropriate .gitignore. Manual only — /bootstrap-turboplan.
+  Does not implement product features.
 disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write, WebFetch, WebSearch, Task
 ---
@@ -34,9 +35,15 @@ implement product features.
   reimplement, do not vendor)
 - Optional: preferred layer list / task count target
 
+**Preferred input:** `planning/intents/F01.md` (or the next confirmed intent)
+written by `/grill-me`. When that file exists and its status is Confirmed,
+it answers the questions below. Do not re-ask settled decisions. Grill only
+what the file left open.
+
 **CRITICAL — context gathering is mandatory.** If the user invokes `/bootstrap-turboplan`
-without a detailed goal and technical description, you MUST ask for them before
-proceeding. Do not invent the goal. Do not guess the stack. Ask:
+without a confirmed intent file and without a detailed goal and technical
+description, you MUST ask for them before proceeding. Do not invent the goal.
+Do not guess the stack. Ask:
 
 1. What does the user get when the project is done? (end-user perspective)
 2. What is the technical scope? (language, runtime, OS, packaging, architecture)
@@ -48,10 +55,17 @@ If the answer is vague, ask follow-ups until you have enough to produce an accur
 hub + spokes + phase plan. A human who won't answer these questions isn't ready to
 bootstrap — stop and say so rather than producing a wrong architecture.
 
+When the goal arrived in the prompt instead of an intent file, write
+`planning/intents/F01.md` in the grill-me shape with **Status: Confirmed**
+only after the human’s explicit yes on your restatement (outcome, user, why
+now, success, constraint, out of scope, quality bar, slice shape). Then
+continue. Silence and “sounds good” are not yes.
+
 **The user may provide this context in the initial prompt, in follow-up answers,
 or as a file attached to the chat session.** If a file is attached and clearly
 contains the project specification (PRD, design doc, notes), read it and
-extract the answers — do not re-ask for information already provided.
+extract the answers — do not re-ask for information already provided. The
+intent file is still written so later sessions do not depend on the transcript.
 
 ## Hard constraints
 
@@ -59,14 +73,20 @@ extract the answers — do not re-ask for information already provided.
 2. Delete spokes/skills that cannot apply; replace wrong-provider files (do not light-edit).
 3. Seed `planning/phases/INDEX.md` + one stub file per INDEX row.  
 4. Adapt skill hard constraints to **this** product.  
-5. Do not commit unless the user explicitly asks.  
-6. Do not implement product features. Specifically:
-   - NEVER create Go source files, `cmd/`, `internal/`, `pkg/`, or `migrations/`
-     directories. These belong to T01 via `/task-2-execute`.
-   - NEVER run `go mod init` or scaffold a Go module. T01 does that.
-   - In-scope (NOT product code): root Makefile, .golangci.yml, lefthook.yml,
-     .gitignore, README.md, .cursor/rules/*.mdc, .cursor/skills/*/SKILL.md,
-     planning/phases/INDEX.md + stubs.  
+5. Do not commit unless the user explicitly asks. When they do, the subject
+   follows **Commit messages** in the hub, using task `T00`:
+   `F01 T00 S1 Seed the operating files for the project.`
+   Machine check: `^F[0-9]{2,} T[0-9]{2,} S[1-9][0-9]* [A-Z][^.!?]*\.$`
+   Stage named paths only. `git add -A` is forbidden. Do not push.
+6. Do not implement product features. Do not create the application source
+   tree. That is T01 via `/task-2-execute`.
+   - In scope: root Makefile, lint config, lefthook, .gitignore, README.md,
+     .cursor/rules/*.mdc, .cursor/skills/*/SKILL.md, planning/phases/,
+     planning/intents/, planning/checklists/.
+   - When the user chose Go: never create `cmd/`, `internal/`, `pkg/`, or
+     `migrations/`, and never run `go mod init`. T01 does that.
+   - When the user chose another stack: never create that stack’s source
+     roots either.  
 7. Bootstrap AC requires **git repo + verify gate files present + lefthook installed**:
    root `Makefile` with `verify` target (lint+test+build for Go), stack lint config,
    and `lefthook install` succeeded. Seeds live under `templates/seeds/` (after install:
@@ -114,8 +134,10 @@ Update `.cursor/rules/general.mdc`:
 - **Product name, architecture, build/verify, safety no-gos** — all project-specific
 - **Routing Map + Problem Class table** for new spokes (include every dep spoke)
 - **Skills inventory** — list all skills that exist in `.cursor/skills/`
+- **Keep these hub sections intact:** Karpathy Behavioral Guidelines, Definition of Done, Commit messages (including the machine check), Irreversible steps, Safety / Workflow Rails, Rule Maintenance steps 0–7, the moment-spoke sentence under **Read Rules Before You Act**, and the **Craft spokes** table. Fill `{{QUALITY_BAR}}` from the intent file. Name the lint config file in Build & Run so execute and complete can require it. Fill craft globs from the real tree. Delete a craft row when you delete that file. Do not list `debug.mdc`, `review.mdc`, or `decisions.mdc` in the craft table or the domain routing map. Do not add craft files to the skills inventory.
 - **Layered delivery**: reference `planning/phases/INDEX.md` only. Do NOT copy
-  task IDs, layer tables, or phase details into the hub.
+  task IDs, layer tables, or phase details into the hub. The INDEX header
+  carries slice shape; the hub points at it.
 - **Dialectic examples** from **this** domain (failure-mode illustrations only)
 - **Do NOT include** generic language-preference evangelism ("Prefer Go",
   "Astro vs Vue vs Wails"), generic test/lint/git philosophy, or toolchain
@@ -128,13 +150,29 @@ Update `.cursor/rules/general.mdc`:
 
 - Delete obsolete  
 - Create/adapt **product domain** spokes with invariants + at least one symptom table skeleton  
-- Language craft spoke if applicable (`go.mdc`, etc.)  
+- Language craft spoke if applicable (`go.mdc`, etc.). Rename
+  `LANGUAGE-craft.mdc` to that file and keep **After the new test is green**.
+- **File-craft spokes** ship with the installer and start as templates.
+  Set real globs, or delete the file **and** its craft-table row:
+  - `security.mdc` — keep when the product accepts input, accounts, or stored
+    credentials. Delete when none of those exist.
+  - `api.mdc` — keep when something is exported or served as an endpoint.
+    Delete for a script with no public surface.
+  - `ui.mdc` — delete when the product has no interface.
+  - `observability.mdc` — delete for a one-shot CLI or a pure library.
+  - `deprecation.mdc` — do not install as a live rule. Leave
+    `planning/spoke-seeds/deprecation.mdc` until a task removes a public surface.
+- **Moment spokes** stay: `debug.mdc`, `review.mdc`, `decisions.mdc`.
+  `alwaysApply: false`, no globs, and no row in either hub table. Phase skills
+  open them by path.
 - **Dependency / docs spokes (mandatory when deps or docs are provided):**
 
   For each library, framework, CLI toolkit, or external API the Goal/Constraints/
   Dependencies/References name (e.g. Cobra, Moonshot API, Cloudflare):
 
-  1. Prefer **official documentation** (fetch or use provided URLs).  
+  1. Open the **official documentation** in this session (fetch the URL). A
+     pattern you did not just read is **unverified** — say so in the spoke
+     instead of stating it as fact.  
   2. Create `.cursor/rules/<name>.mdc` (e.g. `cobra.mdc`) including:
      - Title + when to apply (`globs` if useful)  
      - **`Docs (if stuck):`** canonical URL near the top (e.g. https://cobra.dev/docs/)  
@@ -162,11 +200,15 @@ Remove skills that only serve deleted stacks.
 After verify gate files are adapted to root, delete these stale seeds:
 
 ```bash
+rm -f planning/phases/_TEMPLATE.md
 rm -f planning/_TEMPLATE.md
+rm -f planning/phases/_INTENT_TEMPLATE.md
 rm -rf planning/verify-SEED
 rm -f planning/README-SEED.md
 rm -f planning/gitignore-SEED
 ```
+
+Keep `planning/checklists/`, `planning/intents/`, and `planning/spoke-seeds/`.
 
 ### 5. Git repo + verify tooling + lefthook (bootstrap acceptance — mandatory)
 
@@ -242,18 +284,33 @@ ignore file instead.
 
 ### 5. Seed phases
 
-1. Derive layered build order from the goal (Guide 02)  
-2. Write `planning/phases/INDEX.md` with T01…Tnn
+1. Read **Slice shape** from the confirmed intent.
+   - **Horizontal layers** (libraries, CLIs, infrastructure): order tasks so
+     each layer is true before the next exists. Use the L0–L8 legend as the
+     default bands.
+   - **Vertical user paths** (a user action is the proof): each task is one
+     path through the stack, still ordered by Depends-on, each path provable
+     without the next path. Record the path name in Notes. `T01` is still the
+     skeleton. The last task is still holistic proof.
+2. Write `planning/phases/INDEX.md` with **Feature** `F01` on every row of
+   this initial product, **Slice shape** in the header, and T01…Tnn.
+3. Split a task before writing it when the title joins two capabilities with
+   “and”, behavior acceptance criteria need more than five bullets, or the
+   work touches two independent subsystems.
 
-**T01 is always the app boilerplate bootstrap task (L0 skeleton).**
+**T01 is always the skeleton (L0).**
 It creates the minimal runnable program so that `make verify` passes:
-- For a Go app: `go mod init`, `cmd/<name>/main.go` (minimal: flag or `fmt.Println`),
-  `internal/` directory tree (`doc.go` stubs), and the root Makefile verify target.
-- No business logic, no features — just the skeleton that compiles.
-- After T01, `make verify` must pass (lint + build + test on the skeleton).  
-3. Create each stub from the Turboplan task template (Description, Requirements, AC, empty Execution plan section, Depends-on, Next, Layer)  
-4. Final task should be E2E / holistic verification  
-5. Early tasks should include verify wiring / sample test+lint green if scaffold exists  
+- Go: `go mod init`, `cmd/<name>/main.go` (minimal entrypoint), `internal/`
+  stubs, and the root Makefile verify target. No business logic.
+- Other stacks: the minimal entrypoint and test that make `make verify` pass.
+  No business logic.
+- After T01, `make verify` must pass (lint + test + build on the skeleton).
+4. Create each stub from the task template: Feature, Description, Requirements,
+   Acceptance Criteria (the thing), Definition of Done pointer, empty Execution
+   plan, Commits table, Depends-on, Next, Layer, Irreversible, Behavior change.
+5. The final task is holistic proof.
+6. Keep `planning/checklists/` in place (definition of done, security,
+   observability).  
 
 ### 6. Human README.md (mandatory)
 
@@ -284,7 +341,12 @@ humans changed — not only `.mdc` files).
 
 ### 7. Self-check
 
-- [ ] Routing Map ↔ rule files bijection  
+- [ ] Domain Routing Map lists domain and dependency spokes only
+- [ ] Craft table lists only file spokes that still exist; moment spokes are absent from both tables
+- [ ] `debug.mdc`, `review.mdc`, and `decisions.mdc` exist, `alwaysApply: false`, no globs
+- [ ] `LANGUAGE-craft.mdc` renamed; language spoke still has **After the new test is green**
+- [ ] `ui.mdc` absent when there is no interface; `observability.mdc` absent for a one-shot CLI or library
+- [ ] `planning/spoke-seeds/deprecation.mdc` present and not copied into `.cursor/rules/` unless this feature removes a public surface
 - [ ] Git repo exists; root `Makefile` has `verify` (lint+test); lint config present;
       lefthook (or approved equivalent) installed and runs that verify on pre-commit
       (note: `make verify` may fail — no source code yet; T01 makes it pass)  
@@ -299,10 +361,14 @@ humans changed — not only `.mdc` files).
 - [ ] Hub states stack choices as facts ("Uses Go 1.26+, React 19") not as methodology preferences ("Prefer Go", "Astro vs Vue vs Wails")
 - [ ] "Karpathy Behavioral Guidelines" heading present in hub (not "Behavioral Guidelines")  
 - [ ] No task IDs or layer tables in general.mdc (INDEX.md is the sole source of truth)  
-- [ ] No product source code created (no `cmd/`, `internal/`, `pkg/`, `migrations/`)  
-- [ ] Installer leftovers cleaned (no `_TEMPLATE.md`, `verify-SEED/`, `README-SEED.md`, `gitignore-SEED` under `planning/`)  
-- [ ] `setup-tasks` skill present in `.cursor/skills/` and listed in hub skills inventory  
-- [ ] T01 is the app skeleton bootstrap task (module init, main.go, directory tree, `make verify` passes)  
+- [ ] Confirmed intent file at `planning/intents/F01.md`; `{{QUALITY_BAR}}` filled in the hub
+- [ ] INDEX header has slice shape; every row has Feature `F01` and a stub
+- [ ] Hub still has Definition of Done, Commit messages (machine check), and Irreversible steps
+- [ ] `planning/checklists/definition-of-done.md`, `security.md`, and `observability.md` present
+- [ ] No product source for the chosen stack (Go: no `cmd/`, `internal/`, `pkg/`, `migrations/`)
+- [ ] Installer leftovers cleaned (no `_TEMPLATE.md`, `_INTENT_TEMPLATE.md`, `verify-SEED/`, `README-SEED.md`, `gitignore-SEED`)
+- [ ] T01 is the skeleton; after T01, `make verify` passes
+- [ ] `setup-tasks` skill present in `.cursor/skills/` and listed in the hub skills inventory  
 
 ### 8. Output to user
 
@@ -312,6 +378,8 @@ humans changed — not only `.mdc` files).
 ### Rules
 - hub: …
 - spokes: … (include dep spokes + docs URLs)
+- file-craft kept: security | api | ui | observability
+- moment spokes closed until a phase skill names them: debug, review, decisions
 - deleted: …
 
 ### README
@@ -336,8 +404,12 @@ humans changed — not only `.mdc` files).
 - packages: latest stable baseline | concern: …
 
 ### Phases
+- Feature: F01
+- Slice shape: horizontal layers | vertical user paths
 - T01…Tnn listed
+- Intent: planning/intents/F01.md
 - First action: /task-1-plan T01
+- Commit subjects: `F01 Tnn Sn One sentence.`
 
 ### Skills
 - adapted: …
@@ -357,4 +429,40 @@ Please confirm architecture + layer order + README before /task-1-plan T01.
 - State stack choices as methodology preferences — state them as facts  
 - Skip a dep/docs spoke when the user named that dependency or provided its docs  
 - Skip creating/updating human `README.md`  
-- Skip creating/updating `.gitignore` (or leave secrets/tmp unignored)  
+- Skip creating/updating `.gitignore` (or leave secrets/tmp unignored)
+- Copy a Go Makefile and `.golangci.yml` into a project whose stack is not Go
+- Drop Definition of Done, Commit messages, or Irreversible steps while rewriting the hub
+- Cite a dependency doc you did not open in this session
+
+## Common rationalizations
+
+| Excuse | Required action |
+| ------ | --------------- |
+| “The seed Makefile is close enough for this stack.” | Adapt verify to the stack the human named. A Go seed on a non-Go repo is a failed bootstrap. |
+| “They described the goal in chat, so an intent file is duplicate.” | Write `planning/intents/F01.md` after an explicit yes. Later sessions do not have the chat. |
+| “Horizontal layers are always right.” | Read slice shape from the intent. User-path products get vertical slices. T01 stays the skeleton. |
+| “I’ll scaffold `cmd/` so T01 is easier.” | T01 creates product source. Bootstrap stops at the operating files. |
+| “Sounds good, I’ll start planning T01.” | The review gate waits for the human to confirm architecture, slice shape, and README. |
+
+## Red flags
+
+- Product source created during bootstrap
+- Hub missing the commit machine check or the definition of done
+- INDEX rows without a Feature id
+- A spoke whose Docs URL was not opened
+- `{{QUALITY_BAR}}` left unsubstituted
+- Checklists deleted as “installer leftovers”
+
+## Under pressure
+
+- “The user wants to see the app compile today.” → T01 is the compile. Bootstrap’s done state is rules, phases, intent, verify gate, and README.
+- “Skip grill, the README pitch is enough.” → Vague scope stops bootstrap. Confirmed intent, or an explicit yes on your restatement, comes first.
+
+## Verification
+
+- [ ] Self-check list above is all true
+- [ ] Intent file status is Confirmed
+- [ ] Slice shape is written on the INDEX
+- [ ] No product source tree
+- [ ] Output names the first action `/task-1-plan T01` and stops there
+  

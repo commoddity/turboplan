@@ -52,9 +52,9 @@ The script copies rules, skills, and phase templates into your repo.
 Then (install only copies generic Turboplan scaffolding — `/grill-me` grills your **idea**, not product code):
 
 1. Open `YOUR_PROJECT` in Cursor
-2. Run `/grill-me` (💡 `large` model — see [Model recommendations](#model-recommendations)) — stress-tests assumptions in rounds; outputs a confirmed summary for step 3
+2. Run `/grill-me` (💡 `large` model — see [Model recommendations](#model-recommendations)) — stress-tests assumptions in rounds; an explicit **yes** writes `planning/intents/Fnn.md`
 3. Run **`/bootstrap-turboplan`** (new project) or **`/setup-tasks`** (existing project — new phases without rebuilding infrastructure)
-  - 💡 `large` model — complex reasoning; pass the grill summary as context
+  - 💡 `large` model — complex reasoning; the skill reads the confirmed intent file
   - ❕ BE THOROUGH — this input drives rules, phases, and README quality
 4. Review the architecture, layer order, and README the agent produced
 5. Enter the **work loop** and begin building 💫
@@ -68,7 +68,7 @@ Once bootstrap is complete, enter the work loop:
 ```mermaid
 flowchart TD
     P["/task-1-plan T01 (medium, large for complex)"] --> E["/task-2-execute T01 (medium or small)"]
-    E --> C["/task-3-complete T01 (medium or small)"]
+    E -->|"local commits Fnn Tnn Sn"| C["/task-3-complete T01 (medium or small)"]
     C -->|"push + Manual test + next branch"| P
 ```
 
@@ -76,15 +76,32 @@ flowchart TD
 
 Every idea starts with the same grill: [/grill-me](METHODOLOGY.md#-grilling-between-idea-and-planning)
 interrogates it in rounds over a design tree (facts via sub-agents, decisions
-via the human) until a shared-understanding summary is confirmed — most
-valuable on greenfield work, where nothing is settled yet. Then:
+via the human). Silence is not a decision. An explicit **yes** writes
+`planning/intents/Fnn.md`, and the turn stops there. Most valuable on
+greenfield work, where nothing is settled yet. Then:
 
-- **New project** → `/bootstrap-turboplan`, which turns the settled goal into rules + phases.
-- **New feature** → `/setup-tasks`, which reads current rules and INDEX plus the
-settled grilling decisions, then proposes new phase stubs without disturbing existing infrastructure.
+- **New project** → `/bootstrap-turboplan`, which reads that intent and turns it into rules + phases.
+- **New feature** → `/setup-tasks`, which reads the new intent plus current rules and INDEX, then appends phase stubs without disturbing existing infrastructure.
 
 Plans will be **handoff-ready** for a lesser execute agent (see hub "[Model split](METHODOLOGY.md#model-split)").
 Only flag large-model execute when the task is exceptionally hard.
+
+Execute commits each green slice **locally** on the task branch. The subject is one line:
+
+```
+F01 T04 S1 Add the tunnel URL parser.
+```
+
+`F01` is the feature, `T04` is the task, `S1` is that task’s commit sequence
+(`S1`, `S2`, `S3`, …). The rest is **one sentence**: capital letter, one
+period at the end, no second sentence. Machine check:
+
+```
+^F[0-9]{2,} T[0-9]{2,} S[1-9][0-9]* [A-Z][^.!?]*\.$
+```
+
+`/task-3-complete` adds the close-out commit in the same shape, then pushes.
+Execute does not push.
 
 
 
@@ -126,10 +143,13 @@ Combined with the hub's routing map, the evolving `.cursor/rules/*.mdc` files ar
 - ❌ **Do not** create rules anywhere but `.cursor/rules/`. Skills live in `.cursor/skills/`.
 - 1️⃣ **One InProgress phase task** at a time unless the human explicitly allows more.
 - ✅ **INDEX Status** uses `✅` when complete (not the word `Done` in the INDEX column).
+- 📝 **Commit subjects** are `Fnn Tnn Sn One sentence.` Execute commits locally. Complete pushes.
+- 🧪 **Behavior changes** start from a test that fails, then the code that makes it pass.
+- ⏸️ **Irreversible steps** (auth, destructive data changes, payments, secrets, anything `git revert` cannot undo) wait for an explicit yes.
 - 🚫 Product **features** are out of scope for bootstrap; bootstrap produces rules +
 phases + skills wiring + dependency spokes from docs + human `README.md` +
 `.gitignore` + **root verify gate** (Makefile / lefthook / lint config; not the app itself).
-- 🧪 Execute/complete **fail closed** if verify tooling is missing — `go test` alone is not green.
+- 🧪 Execute/complete **fail closed** if verify tooling is missing — package tests alone are not green.
 - 👥 **Rules/skills = agents; README = humans** — both evolve; keep Dependencies & docs
 and architecture narrative aligned with `.cursor/rules/` as the project grows.
 
@@ -252,12 +272,15 @@ If Modes A/B find nothing: *"Nothing to capture — session was routine."*
 ```
 .
 ├── scripts/
-│   └── install-into.sh ........... 🎯 One-shot installer (absolute project path)
+│   ├── install-into.sh ........... 🎯 One-shot installer (absolute project path)
+│   └── validate-skills.sh ........ 🧪 Structure check for skills, commit format, checklists
 ├── METHODOLOGY.md ................ 🧠 Why this works; entry points; work loop
 ├── templates/
 │   ├── seeds/ .................... 🌱 readme · gitignore · verify (Makefile / lefthook / golangci)
-│   ├── rules/ .................... 📜 Generic `general.mdc` + example domain spoke
+│   ├── checklists/ ............... ✅ definition of done · security · observability
+│   ├── rules/ .................... 📜 Hub, domain example, file-craft spokes, moment spokes
+│   ├── spoke-seeds/ .............. 📎 deprecation.mdc (copied live only for a removal)
 │   ├── skills/ ................... 🧩 Grill-me, bootstrap, setup-tasks, plan, execute, complete, dialectic, audit
-│   └── phases/ ................... 🗂️ INDEX.md skeleton + TXX-template.md
+│   └── phases/ ................... 🗂️ INDEX.md · TXX-template.md · intent-template.md
 ```
 

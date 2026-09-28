@@ -1,0 +1,24 @@
+---
+description: Moment spoke. /task-1-plan reads this only when a choice binds a later task and is not already in the feature intent file.
+alwaysApply: false
+---
+
+# Decisions
+
+`/task-1-plan` opens this file only when both are true:
+
+- The choice will bind a later task
+- `planning/intents/Fnn.md` does not already record it
+
+Write the entry in this file. Do not copy the intent file. Do not record a detail that matters only to the current task.
+
+```markdown
+### YYYY-MM-DD — <decision>
+
+- Choice:
+- Why:
+- Rejected:
+- Binds tasks:
+```
+
+One entry per choice. Dialectic failure notes stay in the domain or file spoke they belong to, not here.

@@ -1,0 +1,34 @@
+---
+description: User interface files. Attaches by glob only. Bootstrap deletes this file when the product has no interface.
+globs: {{UI_GLOBS}}
+alwaysApply: false
+---
+
+# Interface
+
+## Scope
+
+- Components, pages, and views a person uses
+- Client state that those views read
+
+## Out of scope
+
+- Servers with no view (see `observability.mdc` when that spoke exists)
+- Phase planning and commit subjects
+
+## Invariants
+
+1. One component owns one job. Shared state is named, not copied into each view.
+2. Keyboard use and labels exist for controls a person must operate.
+3. The empty, loading, and error states are visible. A happy-path-only view is unfinished.
+4. When this task has a page to open, the manual test names the URL or the command and what success looks like.
+
+## Problem classes
+
+### `View only covers the happy path`
+
+| Symptom | Cause | Fix |
+| ------- | ----- | --- |
+| A failed request leaves the view unchanged | Error and empty states were never built | Add the state this task can actually produce. Leave future states for a later task. |
+
+<!-- last-verified: YYYY-MM -->

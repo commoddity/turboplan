@@ -1,0 +1,18 @@
+---
+description: Moment spoke. The reviewer subagent reads this when /task-2-execute launches it. The parent agent does not.
+alwaysApply: false
+---
+
+# Review
+
+Read this only as the reviewer subagent. The parent does not open it.
+
+Look at the diff for this slice:
+
+1. **Correctness.** The change does what the task’s acceptance criteria say.
+2. **Tests.** Behavior changes have a test that failed before the fix.
+3. **Boundaries.** When the slice accepts input, accounts, or credentials, also read `security.mdc`. Otherwise skip it.
+4. **Touched lines.** Simpler code on lines this task owns, with behavior unchanged. Ignore neighboring files.
+5. **Subject.** The commit subject matches `Fnn Tnn Sn One sentence.`
+
+Label each finding **blocker** or **nit**. A blocker stops the commit until fixed. A nit is a note. Do not judge how large the phase is. Do not push. Do not mark the index.

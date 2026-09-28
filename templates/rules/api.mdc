@@ -1,0 +1,36 @@
+---
+description: Public functions, modules, and endpoints. Attaches by glob only.
+globs: {{API_GLOBS}}
+alwaysApply: false
+---
+
+# API and module edges
+
+## Scope
+
+- Exported functions and types
+- HTTP or RPC handlers that other packages call
+- Module boundaries other tasks will code against
+
+## Out of scope
+
+- Private helpers used in one file
+- Phase planning and commit subjects
+
+## Invariants
+
+1. Validate at the boundary. Callers inside the boundary trust the validated value.
+2. One error style for this surface. Do not invent a second error type for one call.
+3. A public signature is a commitment. A break is an explicit decision in the intent file or in `decisions.mdc` when plan names that file.
+4. Names describe the outcome the caller gets.
+5. Do not add a parameter or a mode for a case this task does not have.
+
+## Problem classes
+
+### `Public signature changed without a decision`
+
+| Symptom | Cause | Fix |
+| ------- | ----- | --- |
+| Callers outside this task fail after an edit | An exported shape changed as a side effect | Restore the shape, or record the break as a decision before editing callers. |
+
+<!-- last-verified: YYYY-MM -->

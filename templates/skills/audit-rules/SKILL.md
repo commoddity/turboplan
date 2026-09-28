@@ -37,25 +37,43 @@ Extract from every skill: frontmatter, path refs, tool allowances.
 
 ## Phase 3 — Structural audit
 
-- Routing Map ↔ actual `.cursor/rules/*.mdc`  
-- Skills inventory in hub ↔ `.cursor/skills/*/`  
+- Domain Routing Map ↔ domain and dependency spokes. The craft table ↔ file
+  spokes that exist (`security.mdc`, `api.mdc`, `ui.mdc`, `observability.mdc`,
+  and `deprecation.mdc` only when a removal copied it in). A craft row for a
+  missing file is `BROKEN`. A live file with no row is `GAP`.
+- Moment spokes `debug.mdc`, `review.mdc`, and `decisions.mdc` exist, have
+  `alwaysApply: false`, have no `globs`, and appear in neither hub table.
+  Absence is `BROKEN`. Listing them in a table is `GAP`.
+- `planning/spoke-seeds/deprecation.mdc` exists. A missing seed is `BROKEN`.
+  A live `deprecation.mdc` with no removal task is `GAP`.
+- Skills inventory in hub ↔ `.cursor/skills/*/`
 - **Hub fidelity:** `general.mdc` still contains **Karpathy Behavioral Guidelines**
-  (four sections), **Project Architecture**, **Delivery Principles**, and
-  **Rule Maintenance** steps **0–7**. If bootstrap stripped these → `MISSING` /
-  dilution gap  
-- **Hooks:** lefthook (or documented equivalent) present and wired to lint+test;
-  root `Makefile` with `verify`; stack lint config present — flag absence as `BROKEN`
-  (execute/complete must hard-abort)  
+  (four sections), **Project Architecture**, **Delivery Principles**,
+  **Definition of Done**, **Commit messages**, **Irreversible steps**, and
+  **Rule Maintenance** steps **0–7**. If bootstrap stripped these → `MISSING`
+- **Commit subjects:** execute and complete forbid `git add -A` and never use it as a step. Mentioning the phrase in a “do not” list is expected. Execute commits locally and does not push. Complete pushes. Both contain the machine check `^F[0-9]{2,} T[0-9]{2,} S[1-9][0-9]* [A-Z][^.!?]*\.$`.
+- **Intent:** `planning/intents/` exists. A missing `Fnn.md` before `/grill-me`
+  is `PENDING_SCAFFOLD`. Grill’s skill requires an explicit yes before writing
+  one
+- **Checklists:** `planning/checklists/definition-of-done.md`,
+  `security.md`, and `observability.md` exist. Absence is `BROKEN`
+- **Skill anatomy:** every `.cursor/skills/*/SKILL.md` has `## Common rationalizations`,
+  `## Red flags`, `## Verification`, and `## Under pressure`
+- **Hooks:** lefthook (or the runner named in the hub) present and wired to
+  lint+test; root `Makefile` with `verify`; the lint config named in the hub
+  is present. Go projects: `.golangci.yml`. Flag absence as `BROKEN`
+  (execute/complete must hard-abort)
 - **Complete skill:** `/task-3-complete` documents push-by-default, `--no-push`,
-  and mandatory Manual test / Nothing to test handoff; verify **presence** abort  
-- **Execute skill:** `/task-2-execute` documents the same verify presence abort  
-- **Bootstrap skill:** prefers latest stable Go + package baselines; creates
-  dependency/docs spokes with official URLs; creates human `README.md`; creates
-  stack-appropriate `.gitignore`; ships verify gate (Makefile + lint config +
-  lefthook) to project root from `templates/seeds/verify/` /
-  `planning/verify-SEED/` (Go Makefile includes multi-platform `build-all`)  
+  the definition of done, and mandatory Manual test / Nothing to test
+- **Execute skill:** `/task-2-execute` documents the verify presence abort,
+  red-then-green for behavior changes, local `Fnn Tnn Sn` commits, and the
+  irreversible pause
+- **Bootstrap skill:** uses the stack the human named; creates dependency
+  spokes with official URLs opened for the entry; creates human `README.md`;
+  creates `.gitignore`; ships the verify gate to the repo root; records slice
+  shape and feature ids on INDEX
 - **Audience split:** named deps appear in both `.cursor/rules/*.mdc` and README
-  Dependencies & docs (flag one-sided coverage as `GAP`)  
+  Dependencies & docs (flag one-sided coverage as `GAP`)
 
 ## Phase 4 — Contradictions
 
@@ -70,3 +88,31 @@ New packages/domains with no spoke; missing skills for repeated workflows.
 Use severity table: `BROKEN` | `PENDING_SCAFFOLD` | `STALE` | `MISSING` | `CONTRADICTION` | `GAP`.
 
 End with counts summary.
+
+## Common rationalizations
+
+| Excuse | Required action |
+| ------ | --------------- |
+| “This entry looks unused, I’ll delete it.” | Flag it. Humans delete. |
+| “The lint config is missing because the app is not scaffolded yet.” | Missing Makefile, hook, or the hub’s lint config is `BROKEN`. Missing product source before T01 is `PENDING_SCAFFOLD`. |
+| “A skill without a pressure section is fine if the procedure is clear.” | The four anatomy headings are the check. Flag `MISSING`. |
+
+## Red flags
+
+- Auto-editing a rule during this audit
+- Calling a latent bug “still open” or “fixed”
+- Treating an empty `planning/intents/` before grill as `BROKEN`
+- Ignoring an execute or complete skill that tells the agent to run `git add -A`
+
+## Under pressure
+
+- “Clean it up while you’re here.” → The output is a severity table. The tree stays as you found it.
+- “The user wants a green audit.” → Report the counts you counted.
+
+## Verification
+
+- [ ] Every rule and skill was inventoried
+- [ ] Severity table uses only `BROKEN`, `PENDING_SCAFFOLD`, `STALE`, `MISSING`, `CONTRADICTION`, `GAP`
+- [ ] No file was modified
+- [ ] Counts summary is present
+

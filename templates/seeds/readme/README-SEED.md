@@ -56,6 +56,9 @@ Bootstrapped with **[Turboplan](https://github.com/commoddity/turboplan)** (agen
 | [`.cursor/rules/`](.cursor/rules/) | 📜 Conventions for coding agents |
 | [`.cursor/skills/`](.cursor/skills/) | 🧩 Invocable plan / execute / complete / … |
 | [`planning/phases/`](planning/phases/) | 🗂️ MVP sequence of record |
+| [`planning/intents/`](planning/intents/) | ✅ Confirmed feature decisions |
+| [`planning/checklists/`](planning/checklists/) | 🧪 Definition of done, security, observability |
+| [`planning/spoke-seeds/`](planning/spoke-seeds/) | 📎 Deprecation spoke, copied live only for a removal |
 
 <!-- BOOTSTRAP: add cmd/, internal/, packages as they appear. -->
 
@@ -77,9 +80,14 @@ Work proceeds one phase task at a time. Full methodology:
   📝 /task-1-plan TXX
         ↓
   🛠️  /task-2-execute TXX
+        local commits: F01 TXX S1 One sentence.
         ↓
-  ✅ /task-3-complete TXX → push (default) + Manual test → next <stub-stem> branch
+  ✅ /task-3-complete TXX → close-out commit + push (default) + Manual test → next <stub-stem> branch
 ```
+
+Commit subjects are one line: feature, task, sub-task, then one sentence.
+Example: `F01 T04 S1 Add the tunnel URL parser.`
+Machine check: `^F[0-9]{2,} T[0-9]{2,} S[1-9][0-9]* [A-Z][^.!?]*\.$`
 
 See [`planning/phases/INDEX.md`](planning/phases/INDEX.md).
 

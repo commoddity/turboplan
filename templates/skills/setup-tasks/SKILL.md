@@ -1,9 +1,9 @@
 ---
 name: setup-tasks
 description: >
-  Pre-planning step for a new feature or addition to an existing project.
-  Gathers context, reads current rules and INDEX, and proposes new
-  phase stubs without rewriting existing infrastructure. Manual only — /setup-tasks.
+  Pre-planning step for a new feature on an existing project. Reads the
+  confirmed planning/intents/Fnn.md and appends phase stubs for that feature
+  id. Does not rewrite existing infrastructure. Manual only — /setup-tasks.
 disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write, WebFetch, WebSearch, Task
 ---
@@ -24,77 +24,75 @@ appended to INDEX.
 - **Dependencies / libraries** — new frameworks or APIs (each needs a rules spoke)
 - **References** — code, docs, or examples to study
 
-**Context gathering is mandatory.** Same protocol as `/bootstrap-turboplan`:
-if the human provides a vague one-liner, ask the detailed questions before
-writing tasks. A feature too vaguely described to plan is a feature the human
-hasn't thought through yet — stop and say so.
+**Context comes from the intent file.** A vague one-liner is not ready. Stop
+and tell the human to run `/grill-me`.
 
-**Preferred input:** a completed `/grill-me` session. When the human arrives
-from `/grill-me`, the settled decisions in its shared-understanding summary
-answer most context questions already — do not re-ask for information already
-settled there; read the summary (and its decision log) and grill only what it
-left open.
+**Preferred input:** a confirmed `/grill-me` file at `planning/intents/Fnn.md`.
+When that file exists, its decisions answer the context questions. Do not
+re-ask them. Grill only what the file left open. The feature id is the id in
+that filename. Do not allocate a second id.
+
+If the human invokes `/setup-tasks` with no intent file, stop and tell them
+to run `/grill-me` first. A vague one-liner is not a feature yet.
 
 ## Procedure
 
 ### 1. Read current state
 
-- Read `.cursor/rules/general.mdc` — understand architecture, safety rails, stack
-- Read `planning/phases/INDEX.md` — know what exists, what's done, what's next
-- Read any relevant domain spokes for the feature area
-- **Delegate codebase exploration to explorer subagents** (one per independent
-  area the feature touches) instead of reading file-by-file on the parent;
-  fan them out in parallel and fold findings in. Small greps may stay inline.
+- Read `.cursor/rules/general.mdc` — architecture, safety rails, commit format, slice shape
+- Read `planning/intents/Fnn.md` for this feature
+- Read `planning/phases/INDEX.md` — what exists, what is done, the next task id, the highest feature id
+- Read the spokes for the feature area
+- Delegate exploration to explorer subagents, one per independent area. Small greps may stay inline.
 
-### 2. Gather context
+### 2. Use the intent
 
-Ask the human the same detailed questions as bootstrap:
-
-1. What does the user get when this feature is done?
-2. What is the technical scope? (which files/packages, new deps, new APIs)
-3. What is explicitly out of scope?
-4. What new dependencies or external APIs will it use?
-5. Are there reference implementations to study?
+Take goal, scope, non-goals, constraints, dependencies, and slice shape from
+the intent file. Ask the human only about gaps the file marks Open or Deferred.
 
 ### 3. Propose tasks
 
-1. Determine where in the layer order the new tasks fit (respect existing Depends-on graph)
-2. Create `planning/phases/TXX-….md` stubs using the task template:
-   - Description, Requirements, Acceptance Criteria, empty Execution plan
-   - Depends-on pointing to existing completed tasks or new preceding stubs
-   - Layer matching the build order
-3. Append rows to `planning/phases/INDEX.md` with proper Depends-on / Next links
-4. If the feature introduces a new dependency, ask the human whether to create
-   a dependency spoke (or note it for bootstrap retarget)
+1. Place new tasks on the existing Depends-on graph. Follow the INDEX slice
+   shape: another horizontal layer, or one vertical user path.
+2. Split before writing when the title joins two capabilities with “and”,
+   behavior acceptance criteria need more than five bullets, or the work
+   touches two independent subsystems.
+3. Create stubs from the task template, each with **Feature: Fnn**, acceptance
+   criteria, a definition-of-done pointer, an empty execution plan, and an
+   empty Commits table.
+4. Append INDEX rows. Set the previous tail’s **Next** when it was `—`.
+   Do not renumber existing rows or change their feature ids.
+5. New dependency: ask before creating a spoke. If yes, open the official
+   docs, write the spoke with a Docs URL, add it to the hub routing map, and
+   mirror it in README. Unopened docs stay unverified.
+6. If the intent removes or replaces a public surface, copy
+   `planning/spoke-seeds/deprecation.mdc` to `.cursor/rules/deprecation.mdc`,
+   set its globs to that surface, and add one row to the hub craft table.
+   Otherwise leave the seed where it is. That row is the only hub edit this
+   skill makes.
 
-### 4. New dependency spokes (optional, human-approved)
-
-If the feature introduces a named library, framework, or external API not yet
-covered by a spoke:
-
-1. Ask the human: "Create a `.cursor/rules/<name>.mdc` spoke for <dep>?"
-2. If yes: fetch official docs, write spoke with symptom/cause/fix table skeleton,
-   add to hub Routing Map
-3. Mirror in README → Dependencies & docs
-
-### 5. Output
+### 4. Output
 
 ```
-## /setup-tasks complete — {{FEATURE}}
+## /setup-tasks complete — Fnn {{FEATURE}}
+
+### Intent
+- planning/intents/Fnn.md
 
 ### Context gathered
 - Goal: …
 - Scope: …
 - Non-goals: …
+- Slice shape: …
 - New deps: … / none
 
 ### New tasks
-| ID | Title | Layer | Depends-on |
-| -- | ----- | ----- | ---------- |
-| TXX | …    | LX    | TYY        |
+| ID | Feature | Title | Layer | Depends-on |
+| -- | ------- | ----- | ----- | ---------- |
+| TXX | Fnn     | …     | LX    | TYY        |
 
 ### INDEX updated
-- Appended after TYY, before (existing next task)
+- Appended after TYY
 
 ### First action
 - /task-1-plan TXX
@@ -102,8 +100,40 @@ covered by a spoke:
 
 ## Do not
 
-- Rewrite the hub, existing rules, or skills
-- Delete or reorder existing INDEX rows
+- Rewrite the hub, existing rules, or skills (a new dependency spoke is an
+  explicit yes; the deprecation row in step 6 is the exception)
+- Delete or reorder existing INDEX rows, or change their feature ids
 - Implement product code
-- Skip context gathering because "the human seems busy"
-- Create dependency spokes without human approval (propose; don't decide)
+- Invent tasks for decisions the intent file does not contain
+- Allocate a feature id different from the intent filename
+- Create dependency spokes without an explicit yes
+
+## Common rationalizations
+
+| Excuse | Required action |
+| ------ | --------------- |
+| “The chat summary is enough; I’ll skip the intent file.” | Stop and send the human to `/grill-me`. |
+| “I’ll tuck this feature into F01 so the index stays short.” | The intent’s feature id is the id on every new row. |
+| “One task called ‘API and UI’ is easier to track.” | Split on “and”, on two subsystems, or on more than five behavior criteria. |
+| “The new library is popular; I’ll add the spoke silently.” | Ask. Open the docs before writing the spoke. |
+
+## Red flags
+
+- New rows with a blank Feature column
+- Existing rows renumbered
+- Tasks that contradict Out of scope in the intent
+- A spoke written from memory
+
+## Under pressure
+
+- “They’re busy, draft the tasks from the one-liner.” → A one-liner is not an intent file. Stop.
+- “Reorder the old phases so the new feature sits in the middle.” → Append. Depends-on expresses the edge. Titles and ids of existing rows stay.
+
+## Verification
+
+- [ ] `planning/intents/Fnn.md` was read and is Confirmed
+- [ ] New stubs and INDEX rows use that feature id
+- [ ] Slice shape of the INDEX was followed
+- [ ] Existing rows were not reordered or renumbered
+- [ ] Output names `/task-1-plan` on the first new task and stops
+
