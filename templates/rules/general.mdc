@@ -12,9 +12,11 @@ live in `.cursor/skills/*/SKILL.md`.
 **`.cursor/rules/` is the sole source of truth for rules.** Do not recreate a
 parallel rules tree elsewhere.
 
-**Hub → spoke (hard):** this file is the hub. Domain playbooks are spokes.
-Do not collapse provider/API/framework detail into this file — route via the
-tables below. New spokes must be added to the Routing Map and/or Problem Class table.
+**Hub → spoke (hard):** this file is the hub. Domain playbooks and file-craft
+notes are spokes. Do not collapse provider, API, or framework detail into this
+file — route via the tables below. A new domain spoke goes in the Routing Map.
+A new file-craft spoke goes in the Craft table. Moment spokes are not added to
+either table.
 
 <!-- BOOTSTRAP: replace all {{PLACEHOLDERS}}. Rewrite Architecture, Routing, Safety, and Skills to match this project. -->
 
@@ -70,12 +72,15 @@ Name the **capability layer** you are advancing so work stays ordered.
 
 ## CRITICAL: Read Rules Before You Act
 
-1. **Read before you act.** Before editing or proposing a change, read the
-   matching rule file(s) in `.cursor/rules/`.
-2. **This file always applies.**
+1. **Read before you act.** Before editing, read the domain spoke and the
+   file-craft spokes whose globs match the paths in this task.
+2. **This file always applies.** It stays short. Procedures live in spokes.
 3. **Rules override defaults.** If a rule conflicts with your instincts, the
    rule wins.
 4. **If no rule covers the situation, stop and ask** rather than guessing.
+5. **Moment spokes stay closed** until the phase skill names them for this
+   step: `debug.mdc`, `review.mdc`, `decisions.mdc`. Do not open every file
+   in `.cursor/rules/` at the start of a task.
 
 ### Routing Map — Which Domain Rule To Read
 
@@ -86,7 +91,24 @@ Name the **capability layer** you are advancing so work stays ordered.
 | Shared language craft, tests, lint | `.cursor/rules/{{lang}}.mdc` |
 | Anything else or unsure | this file + ask |
 
-When a task spans multiple areas, read every applicable rule file before starting.
+When a task spans multiple areas, read every **file** spoke for the paths in
+this task. That means domain rows above and craft rows below whose globs match.
+It does not mean every `.mdc` in the folder.
+
+### Craft spokes — open only when the paths match
+
+Bootstrap deletes a row when it deletes the file. A product with no interface
+has no UI row.
+
+| Open only when these paths are in the task | Spoke |
+| ------------------------------------------ | ----- |
+| {{SECURITY_GLOBS}} | `.cursor/rules/security.mdc` |
+| {{API_GLOBS}} | `.cursor/rules/api.mdc` |
+| {{UI_GLOBS}} | `.cursor/rules/ui.mdc` |
+| {{OBSERVABILITY_GLOBS}} | `.cursor/rules/observability.mdc` |
+
+File spokes use `alwaysApply: false` and those globs. They attach with the
+files, not with every prompt.
 
 ---
 
@@ -118,27 +140,40 @@ When a task spans multiple areas, read every applicable rule file before startin
 
 ## Delivery Principles
 
+**Confirmed intent:** [`planning/intents/`](../../planning/intents/). One file
+per feature (`F01.md`, `F02.md`, …), written by `/grill-me` after an explicit
+yes. Bootstrap and `/setup-tasks` consume that file.
+
 **MVP sequence of record:** [`planning/phases/INDEX.md`](../../planning/phases/INDEX.md).
-Use `/task-1-plan` → `/task-2-execute` → `/task-3-complete`. Do not skip layers.
+Use `/task-1-plan` → `/task-2-execute` → `/task-3-complete`. Advance only on a
+green base.
 
-### Layered build order
+### Slice shape
 
-See [`planning/phases/INDEX.md`](../../planning/phases/INDEX.md) for the
-current layered build order and task sequence.
+The INDEX header records **Slice shape**.
 
-Wire features in dependency order. **Stop at a failed verification.** Do not
-advance to the next layer on a broken base.
+- **Horizontal layers** — libraries, CLIs, and infrastructure. Each layer is
+  true before the next exists.
+- **Vertical user paths** — products whose proof is a user action. One path
+  through the stack, still ordered by Depends-on, each path provable on its own.
+
+`T01` is always the skeleton. The last task is always holistic proof.
 
 ### Atomic work + verification gates
 
 Prefer small, independently checkable units. Before calling a chunk done, run
 the cheapest proof that fits (`{{VERIFY_COMMANDS}}`, package tests, manual path).
 
+Behavior changes start from a test that fails, then the code that makes it pass.
+Renames and scaffolding still require the verify gate; they do not require a
+red test first.
+
 ### Model split: expensive plan → cheap execute
 
-Use a **large / expensive** model for `/task-1-plan` (and bootstrap / hard
-dialectic), and a **smaller / faster / cheaper** model for `/task-2-execute`
-and usually `/task-3-complete`.
+Use a **large** model for `/grill-me`, `/bootstrap-turboplan`, `/setup-tasks`,
+and `/task-1-plan` (and for hard dialectic). Use a **medium or small** model
+for `/task-2-execute` and usually `/task-3-complete`. Size tiers are defined
+in the project README under Model recommendations.
 
 **Plan handoff bar:** `/task-1-plan` must write an Execution plan detailed
 enough that a **lesser agent** can implement it without rediscovering
@@ -147,12 +182,90 @@ architecture, guessing file paths, or inventing design. Prefer:
 - Concrete files/packages to create or edit
 - Function/type/API shapes or signatures when non-obvious
 - Ordered steps with `→ verify:` checks
-- Explicit test cases to add
+- For behavior changes: the failing test, then the implementation
+- Planned commit subjects in the format below
 - Exact verify/lint commands
-- Risks, pitfalls, and "do not" edges
+- Risks, pitfalls, and irreversible steps
 
 If the plan is only high-level ("wire the handler", "add tests"), it is
 **incomplete** — deepen it before marking it planned.
+
+### Definition of Done
+
+Acceptance criteria answer “did this task build the right thing?”. The
+Definition of Done answers “is it finished?”. Both are required.
+
+Full checklist: [`planning/checklists/definition-of-done.md`](../../planning/checklists/definition-of-done.md).
+
+Standing bar for every close-out:
+
+- This task’s acceptance criteria are checked
+- Behavior was exercised at runtime when a runtime exists (manual test, or a test that failed before the change)
+- `{{VERIFY_COMMANDS}}` is green and the verify toolchain is present
+- README updated when the operator story changed
+- Untrusted input, auth, or secrets reviewed against [`planning/checklists/security.md`](../../planning/checklists/security.md)
+- A new production path has a log or metric, or close-out says nothing to observe, per [`planning/checklists/observability.md`](../../planning/checklists/observability.md)
+- Irreversible steps were paused for a human
+- Manual test section filled (`Nothing to test` plus why, when that is honest)
+
+### Project quality bar
+
+{{QUALITY_BAR}}
+
+### Docs citation
+
+A dependency spoke’s **Docs (if stuck)** URL is the authority for that library.
+Apply a documented fix only after opening that URL in the current session.
+If it was not opened, the claim stays **unverified** until it is.
+
+---
+
+## Commit messages
+
+Every commit subject is **one line**. Three identifiers, then one sentence:
+
+```
+F01 T04 S1 Add the tunnel URL parser.
+```
+
+| Field | Form | Meaning |
+| ----- | ---- | ------- |
+| Feature | `F01` | Feature this task belongs to. `F01` is the initial product. Later features are `F02`, `F03`, … |
+| Task | `T04` | Phase task id from INDEX |
+| Sub-task | `S1` | Commit sequence for that task, starting at `S1`. The next commit is the next integer (`S2`, `S3`, …). Never zero-pad, never reuse. |
+| Sentence | `Add the tunnel URL parser.` | One imperative sentence. It starts with a capital letter. It ends with a period. It contains no other period, exclamation mark, or question mark. |
+
+Machine check (the subject must match):
+
+```
+^F[0-9]{2,} T[0-9]{2,} S[1-9][0-9]* [A-Z][^.!?]*\.$
+```
+
+Rules:
+
+- One slice, one sentence. A subject that needs “and” between two capabilities is two commits.
+- No second line, no trailer, no `Co-authored-by`.
+- No type prefix (`feat:`, `fix:`).
+- No emoji.
+- Stage the files that sentence describes. `git add -A` is forbidden.
+- `/task-2-execute` makes these commits locally on the `<stub-stem>` branch and does not push.
+- `/task-3-complete` makes the close-out commit in the same format, then pushes (unless `--no-push`).
+- `T00` is reserved for a bootstrap infrastructure commit, and only when the human explicitly asks bootstrap to commit. Example: `F01 T00 S1 Seed the operating files for the project.`
+- Record every subject and short SHA in the task file’s **Commits** table. The next id is one greater than the highest `S` already used for that task in the table or in `git log`.
+
+---
+
+## Irreversible steps
+
+Stop and wait for the human before:
+
+- Authentication or authorization changes
+- Destructive data migrations or deletions
+- Payments or billing
+- Secrets or credentials
+- Anything `git revert` cannot undo
+
+Name the risk in the message that waits. Continue only after an explicit yes.
 
 ---
 
@@ -161,8 +274,11 @@ If the plan is only high-level ("wire the handler", "add tests"), it is
 NEVER do these without explicit user approval:
 
 - Modify `.cursor/rules/` files (except via `/dialectic-of-cognition`)
-- Commit or push to git **outside** `/task-3-complete`
-- Force-push, rewrite shared history, or push secrets
+- Commit on `main` or `master`
+- Commit outside `/task-2-execute` and `/task-3-complete`
+- Push outside `/task-3-complete`
+- Use a commit subject that fails the Commit messages check above
+- Force-push, rewrite shared history, or commit secrets
 - {{EXTRA_NO_GO_1}}
 - {{EXTRA_NO_GO_2}}
 
@@ -218,6 +334,10 @@ Write into the appropriate `.cursor/rules/*.mdc`. A good entry answers:
 2. **What causes it?** (root pattern)
 3. **How do you fix it?** (actionable steps)
 
+When the fix rests on an external doc, name that spoke’s Docs URL and the month
+it was opened. Open the URL in this session before encoding. An entry that
+claims a doc it did not open stays unfinished.
+
 ```
 ### `<Problem Class Name>`
 
@@ -267,11 +387,11 @@ split to the user. Never split without approval.
 
 | Skill | Path | Purpose |
 | ----- | ---- | ------- |
-| `/bootstrap-turboplan` | `.cursor/skills/bootstrap-turboplan/SKILL.md` | From goal → rules + phases + dep spokes + README + .gitignore + root verify gate |
-| `/task-1-plan` | `.cursor/skills/task-1-plan/SKILL.md` | Plan one phase task |
-| `/task-2-execute` | `.cursor/skills/task-2-execute/SKILL.md` | Implement one phase task |
-| `/task-3-complete` | `.cursor/skills/task-3-complete/SKILL.md` | Verify + dialectic + INDEX ✅ + commit + push (default) + manual test + next branch |
+| `/bootstrap-turboplan` | `.cursor/skills/bootstrap-turboplan/SKILL.md` | From confirmed intent → rules + phases + dep spokes + README + .gitignore + root verify gate |
+| `/task-1-plan` | `.cursor/skills/task-1-plan/SKILL.md` | Plan one phase task, including commit subjects |
+| `/task-2-execute` | `.cursor/skills/task-2-execute/SKILL.md` | Implement one phase task; local commits `Fnn Tnn Sn`; no push |
+| `/task-3-complete` | `.cursor/skills/task-3-complete/SKILL.md` | Definition of Done + dialectic + close-out commit + push (default) + manual test + next branch |
 | `/dialectic-of-cognition` | `.cursor/skills/dialectic-of-cognition/SKILL.md` | Encode session learnings into rules |
 | `/audit-rules` | `.cursor/skills/audit-rules/SKILL.md` | Read-only audit of rules/skills vs tree |
-| `/grill-me` | `.cursor/skills/grill-me/SKILL.md` | Interrogate an idea over a design tree until shared understanding; feeds /setup-tasks |
-| `/setup-tasks` | `.cursor/skills/setup-tasks/SKILL.md` | New feature → context → phase stubs appended to INDEX |
+| `/grill-me` | `.cursor/skills/grill-me/SKILL.md` | Design-tree interview until an explicit yes; writes planning/intents/Fnn.md |
+| `/setup-tasks` | `.cursor/skills/setup-tasks/SKILL.md` | Confirmed feature intent → phase stubs appended to INDEX |

@@ -1,0 +1,34 @@
+---
+description: Language craft, tests, and lint for {{LANGUAGE}}. Includes how to simplify lines this task owns.
+globs: {{LANG_GLOBS}}
+alwaysApply: false
+---
+
+# {{LANGUAGE}} craft
+
+<!-- BOOTSTRAP: rename this file to the language spoke, for example go.mdc. Set globs to that language’s source files. -->
+
+## Scope
+
+- Formatting, tests, and lint for {{LANGUAGE}}
+- Simplifying lines the current task already changed
+
+## Invariants
+
+1. New behavior has a test. A behavior change shows that test failing before the production edit.
+2. `make verify` is the gate. Package tests alone are not.
+3. Match the style already in the file.
+
+## After the new test is green
+
+Simplify only lines this task touched. Leave code you cannot explain. Tests stay green. When the simplification is its own slice, it gets its own `Fnn Tnn Sn` subject. Do not fold it into a behavior commit, and do not edit neighboring files.
+
+## Problem classes
+
+### `Test never failed`
+
+| Symptom | Cause | Fix |
+| ------- | ----- | --- |
+| A new test passes on the first run of a behavior change | The test was written after the fix, or it does not exercise the case | Revert the production edit, confirm the test fails for the intended reason, then restore the fix. |
+
+<!-- last-verified: YYYY-MM -->

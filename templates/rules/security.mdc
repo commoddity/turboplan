@@ -1,0 +1,39 @@
+---
+description: Boundaries that accept input, accounts, or stored credentials. Attaches by glob only.
+globs: {{SECURITY_GLOBS}}
+alwaysApply: false
+---
+
+# Security
+
+Close-out yes/no list: `planning/checklists/security.md`. This spoke is how to build the change. Open it because a matching file is in the task, not because the prompt mentioned the topic.
+
+## Scope
+
+- Input that crosses a trust boundary
+- Account checks on a new path
+- Credentials at rest or in configuration
+
+## Out of scope
+
+- Review notes (the reviewer reads `review.mdc` only when launched)
+- Phase planning, commits, and the index
+
+## Invariants
+
+1. Validate input at the boundary before use.
+2. A new path states how the caller is allowed in, or states why it is open.
+3. Credentials stay out of source, logs, and commit subjects. `.env` files stay ignored.
+4. Pass external strings into queries and process calls as data, not as the command or the query text.
+5. A new dependency is named on purpose and has a docs spoke whose URL was opened this session.
+6. A change you cannot undo with `git revert` waits for an explicit human yes. The hub lists those steps.
+
+## Problem classes
+
+### `Boundary accepted untrusted structure`
+
+| Symptom | Cause | Fix |
+| ------- | ----- | --- |
+| A handler trusts the shape of an incoming payload | Validation happens after the value is used | Validate at the boundary. Keep the failure test that shows the bad payload rejected. |
+
+<!-- last-verified: YYYY-MM -->

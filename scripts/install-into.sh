@@ -107,6 +107,8 @@ ${BOLD}What it does${RST}
   📦  Copies Turboplan ${DIM}templates/rules${RST}     →  ${DIM}.cursor/rules/${RST}
   🧠  Copies Turboplan ${DIM}templates/skills${RST}    →  ${DIM}.cursor/skills/${RST}
   📋  Copies Turboplan ${DIM}templates/phases${RST}    →  ${DIM}planning/phases/${RST}
+  ✅  Copies ${DIM}templates/checklists/${RST}         →  ${DIM}planning/checklists/${RST}
+  📎  Copies ${DIM}templates/spoke-seeds/${RST}        →  ${DIM}planning/spoke-seeds/${RST}
   🌱  Copies ${DIM}templates/seeds/${RST}              →  ${DIM}planning/*-SEED${RST}
        (readme · gitignore · verify → Makefile / lefthook / golangci)
 
@@ -126,6 +128,13 @@ TARGET="$1"
 [[ -d "${PACK_ROOT}/templates/rules" ]] || die "Pack templates missing under ${PACK_ROOT}"
 [[ -d "${PACK_ROOT}/templates/skills" ]] || die "Pack templates missing under ${PACK_ROOT}"
 [[ -d "${PACK_ROOT}/templates/phases" ]] || die "Pack templates missing under ${PACK_ROOT}"
+[[ -d "${PACK_ROOT}/templates/checklists" ]] || die "Pack checklists missing: templates/checklists/"
+[[ -f "${PACK_ROOT}/templates/phases/intent-template.md" ]] || die "Intent template missing"
+[[ -f "${PACK_ROOT}/templates/checklists/definition-of-done.md" ]] || die "Definition of done checklist missing"
+[[ -f "${PACK_ROOT}/templates/spoke-seeds/deprecation.mdc" ]] || die "Deprecation spoke seed missing"
+for spoke in security.mdc api.mdc ui.mdc observability.mdc debug.mdc review.mdc decisions.mdc LANGUAGE-craft.mdc; do
+  [[ -f "${PACK_ROOT}/templates/rules/${spoke}" ]] || die "Craft spoke missing: templates/rules/${spoke}"
+done
 [[ -d "${PACK_ROOT}/templates/seeds" ]] || die "Pack seeds missing: templates/seeds/"
 [[ -f "${PACK_ROOT}/templates/seeds/readme/README-SEED.md" ]] || die "README seed missing"
 [[ -f "${PACK_ROOT}/templates/seeds/gitignore/gitignore-SEED" ]] || die "gitignore seed missing"
@@ -153,6 +162,9 @@ mkdir -p \
   "${TARGET}/.cursor/rules" \
   "${TARGET}/.cursor/skills" \
   "${TARGET}/planning/phases" \
+  "${TARGET}/planning/intents" \
+  "${TARGET}/planning/checklists" \
+  "${TARGET}/planning/spoke-seeds" \
   "${TARGET}/planning/verify-SEED"
 sleep 2.5
 STEP=$((STEP + 1))
@@ -162,6 +174,7 @@ step_done "${STEP}" "${TOTAL_STEPS}" "📂" "Directories" ".cursor / planning"
 # --- step 2: rules -----------------------------------------------------------
 spin_start "Installing agent rules"
 cp -R "${PACK_ROOT}/templates/rules/." "${TARGET}/.cursor/rules/"
+cp "${PACK_ROOT}/templates/spoke-seeds/deprecation.mdc" "${TARGET}/planning/spoke-seeds/deprecation.mdc"
 sleep 2.2
 STEP=$((STEP + 1))
 spin_stop
@@ -185,10 +198,14 @@ step_done "${STEP}" "${TOTAL_STEPS}" "🧩" "Agent skills" ".cursor/skills/"
 spin_start "Seeding phase INDEX + template"
 cp "${PACK_ROOT}/templates/phases/INDEX.md" "${TARGET}/planning/phases/INDEX.md"
 cp "${PACK_ROOT}/templates/phases/TXX-template.md" "${TARGET}/planning/phases/_TEMPLATE.md"
+cp "${PACK_ROOT}/templates/phases/intent-template.md" "${TARGET}/planning/phases/_INTENT_TEMPLATE.md"
+cp "${PACK_ROOT}/templates/checklists/definition-of-done.md" "${TARGET}/planning/checklists/definition-of-done.md"
+cp "${PACK_ROOT}/templates/checklists/security.md" "${TARGET}/planning/checklists/security.md"
+cp "${PACK_ROOT}/templates/checklists/observability.md" "${TARGET}/planning/checklists/observability.md"
 sleep 2.0
 STEP=$((STEP + 1))
 spin_stop
-step_done "${STEP}" "${TOTAL_STEPS}" "📋" "Phase plan" "planning/phases/"
+step_done "${STEP}" "${TOTAL_STEPS}" "📋" "Phase plan" "INDEX / intent / checklists"
 
 # --- step 5: human README seed -----------------------------------------------
 spin_start "Installing README seed"
@@ -239,6 +256,10 @@ printf '    %s\n' "${DIM}ls ${TARGET}/.cursor/skills${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/README-SEED.md && echo README-SEED ok${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/gitignore-SEED && echo gitignore-SEED ok${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/verify-SEED/Makefile && echo verify-SEED ok${RST}"
+printf '    %s\n' "${DIM}test -f ${TARGET}/planning/checklists/definition-of-done.md && echo checklists ok${RST}"
+printf '    %s\n' "${DIM}test -f ${TARGET}/planning/phases/_INTENT_TEMPLATE.md && echo intent template ok${RST}"
+printf '    %s\n' "${DIM}test -f ${TARGET}/planning/spoke-seeds/deprecation.mdc && echo spoke seed ok${RST}"
+printf '    %s\n' "${DIM}test -f ${TARGET}/.cursor/rules/debug.mdc && echo moment spokes ok${RST}"
 echo
 
 # -- numbered next steps like wizard -------------------------------------------
@@ -246,12 +267,12 @@ printf '%s\n' "  ${BOLD}${WHT}🚀  Next steps${RST}"
 echo
 printf '%s\n' "  ${BOLD}${WHT}1️⃣${RST}   Open the project in Cursor"
 printf '    %s\n\n' "${DIM}That's where the agent reads the rules you just installed.${RST}"
-printf '%s\n' "  ${BOLD}${WHT}2️⃣${RST}   Run ${MAG}/bootstrap-turboplan${RST} with your goal"
-printf '    %s\n\n' "${DIM}The agent will ask for a detailed goal, technical scope, and constraints.${RST}"
-printf '%s\n' "  ${BOLD}${WHT}3️⃣${RST}   Bootstrap adapts seeds to the repo root"
-printf '    %s\n\n' "${DIM}Makefile / lefthook / .gitignore / README — not just under planning/.${RST}"
-printf '%s\n' "  ${BOLD}${WHT}4️⃣${RST}   Review the verify gate, then ${MAG}/task-1-plan T01${RST}"
-printf '    %s\n\n' "${DIM}Prefer a large / expensive model for the plan.${RST}"
+printf '%s\n' "  ${BOLD}${WHT}2️⃣${RST}   Run ${MAG}/grill-me${RST}"
+printf '    %s\n\n' "${DIM}An explicit yes writes planning/intents/F01.md. Silence is not a yes.${RST}"
+printf '%s\n' "  ${BOLD}${WHT}3️⃣${RST}   Run ${MAG}/bootstrap-turboplan${RST}"
+printf '    %s\n\n' "${DIM}It reads that intent and adapts rules, phases, and the verify gate.${RST}"
+printf '%s\n' "  ${BOLD}${WHT}4️⃣${RST}   Review architecture and slice shape, then ${MAG}/task-1-plan T01${RST}"
+printf '    %s\n\n' "${DIM}Prefer a large model for the plan. Execute commits locally; complete pushes.${RST}"
 echo
 
 printf '%s\n' "${DIM}Docs: METHODOLOGY.md${RST}"

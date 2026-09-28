@@ -28,7 +28,8 @@ What this spoke does **not** cover (route elsewhere):
 
 **Docs (if stuck):** {{CANONICAL_DOC_URL}}
 
-- Prefer official docs over blog posts. Date-stamp when consulted.
+- Prefer official docs over blog posts. Open the URL in the session that applies a fix.
+- A fix from this table is **unverified** until that URL was opened in the current session.
 - last consulted: {{YYYY-MM}}
 
 ## Problem classes

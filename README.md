@@ -14,8 +14,6 @@ It allows planning and execution of complex software engineering features using 
 - ♻️ **Evolve as you learn** — hard-won patterns get captured back into the rules
 - 🧩 **Product-agnostic** — no sample product bundled; adapts to your stack
 
-
-
 **📖 Methodology**
 
 > [💡 For full methodology details, see METHODOLOGY.md](METHODOLOGY.md).
@@ -29,11 +27,7 @@ It allows planning and execution of complex software engineering features using 
 - [🌀 Dialectic of Cognition Methodology](#-dialectic-of-cognition-methodology)
 - [📂 Files and Directories](#-files-and-directories)
 
-
-
 ---
-
-
 
 ## ⚡ Quickstart
 
@@ -52,14 +46,12 @@ The script copies rules, skills, and phase templates into your repo.
 Then (install only copies generic Turboplan scaffolding — `/grill-me` grills your **idea**, not product code):
 
 1. Open `YOUR_PROJECT` in Cursor
-2. Run `/grill-me` (💡 `large` model — see [Model recommendations](#model-recommendations)) — stress-tests assumptions in rounds; outputs a confirmed summary for step 3
-3. Run **`/bootstrap-turboplan`** (new project) or **`/setup-tasks`** (existing project — new phases without rebuilding infrastructure)
-  - 💡 `large` model — complex reasoning; pass the grill summary as context
-  - ❕ BE THOROUGH — this input drives rules, phases, and README quality
+2. Run `/grill-me` (💡 `large` model — see [Model recommendations](#model-recommendations)) — stress-tests assumptions in rounds; an explicit **yes** writes `planning/intents/Fnn.md`
+3. Run `/bootstrap-turboplan` (new project) or `/setup-tasks` (existing project — new phases without rebuilding infrastructure)
+   - 💡 `large` model — complex reasoning; the skill reads the confirmed intent file
+   - ❕ BE THOROUGH — this input drives rules, phases, and README quality
 4. Review the architecture, layer order, and README the agent produced
 5. Enter the **work loop** and begin building 💫
-
-
 
 ## 🔁 Running the Work Loop
 
@@ -68,31 +60,43 @@ Once bootstrap is complete, enter the work loop:
 ```mermaid
 flowchart TD
     P["/task-1-plan T01 (medium, large for complex)"] --> E["/task-2-execute T01 (medium or small)"]
-    E --> C["/task-3-complete T01 (medium or small)"]
+    E -->|"local commits Fnn Tnn Sn"| C["/task-3-complete T01 (medium or small)"]
     C -->|"push + Manual test + next branch"| P
 ```
 
-
-
 Every idea starts with the same grill: [/grill-me](METHODOLOGY.md#-grilling-between-idea-and-planning)
 interrogates it in rounds over a design tree (facts via sub-agents, decisions
-via the human) until a shared-understanding summary is confirmed — most
-valuable on greenfield work, where nothing is settled yet. Then:
+via the human). Silence is not a decision. An explicit **yes** writes
+`planning/intents/Fnn.md`, and the turn stops there. Most valuable on
+greenfield work, where nothing is settled yet. Then:
 
-- **New project** → `/bootstrap-turboplan`, which turns the settled goal into rules + phases.
-- **New feature** → `/setup-tasks`, which reads current rules and INDEX plus the
-settled grilling decisions, then proposes new phase stubs without disturbing existing infrastructure.
+- **New project** → `/bootstrap-turboplan`, which reads that intent and turns it into rules + phases.
+- **New feature** → `/setup-tasks`, which reads the new intent plus current rules and INDEX, then appends phase stubs without disturbing existing infrastructure.
 
 Plans will be **handoff-ready** for a lesser execute agent (see hub "[Model split](METHODOLOGY.md#model-split)").
 Only flag large-model execute when the task is exceptionally hard.
 
+Execute commits each green slice **locally** on the task branch. The subject is one line:
 
+```
+F01 T04 S1 Add the tunnel URL parser.
+```
+
+`F01` is the feature, `T04` is the task, `S1` is that task’s commit sequence
+(`S1`, `S2`, `S3`, …). The rest is **one sentence**: capital letter, one
+period at the end, no second sentence. Machine check:
+
+```
+^F[0-9]{2,} T[0-9]{2,} S[1-9][0-9]* [A-Z][^.!?]*\.$
+```
+
+`/task-3-complete` adds the close-out commit in the same shape, then pushes.
+Execute does not push.
 
 ### Model split
 
 See [Model recommendations](#model-recommendations) for the specific providers and models
 behind each size tier.
-
 
 | Skill                                   | Recommended model                         |
 | --------------------------------------- | ----------------------------------------- |
@@ -102,15 +106,12 @@ behind each size tier.
 | `/task-2-execute`                       | Medium or small                           |
 | `/task-3-complete`                      | Medium or small                           |
 
-
 > 💡 **This is a recommendation, not a hard rule.** Use the largest model you have
 > access to when the task warrants it; scale down when mechanical execution suffices.
 
 > For full work loop details see [METHODOLOGY.md#-running-the-loop](METHODOLOGY.md#-running-the-loop).
 > For how skills delegate to subagents see
 > `METHODOLOGY.md` [— Subagent delegation](METHODOLOGY.md#4--subagent-delegation).
-
-
 
 ## 🔌 Cursor Configuration
 
@@ -126,18 +127,17 @@ Combined with the hub's routing map, the evolving `.cursor/rules/*.mdc` files ar
 - ❌ **Do not** create rules anywhere but `.cursor/rules/`. Skills live in `.cursor/skills/`.
 - 1️⃣ **One InProgress phase task** at a time unless the human explicitly allows more.
 - ✅ **INDEX Status** uses `✅` when complete (not the word `Done` in the INDEX column).
+- 📝 **Commit subjects** are `Fnn Tnn Sn One sentence.` Execute commits locally. Complete pushes.
+- 🧪 **Behavior changes** start from a test that fails, then the code that makes it pass.
+- ⏸️ **Irreversible steps** (auth, destructive data changes, payments, secrets, anything `git revert` cannot undo) wait for an explicit yes.
 - 🚫 Product **features** are out of scope for bootstrap; bootstrap produces rules +
 phases + skills wiring + dependency spokes from docs + human `README.md` +
 `.gitignore` + **root verify gate** (Makefile / lefthook / lint config; not the app itself).
-- 🧪 Execute/complete **fail closed** if verify tooling is missing — `go test` alone is not green.
+- 🧪 Execute/complete **fail closed** if verify tooling is missing — package tests alone are not green.
 - 👥 **Rules/skills = agents; README = humans** — both evolve; keep Dependencies & docs
 and architecture narrative aligned with `.cursor/rules/` as the project grows.
 
-
-
 ### 🛠️ Model recommendations
-
-
 
 ### 📢 Public Service Announcement
 
@@ -149,22 +149,16 @@ and architecture narrative aligned with `.cursor/rules/` as the project grows.
 
 Where "large", "medium", and "small" appear throughout the docs, they refer to:
 
-
 | Size       | Provider & Model                                                                                                                      |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | **Large**  | [GLM-5.3](https://docs.z.ai/guides/llm/glm-5.3) or [Kimi K3](https://platform.kimi.ai/docs/guide/kimi-k3-quickstart)                  |
 | **Medium** | [DeepSeek V4 Pro](https://api-docs.deepseek.com/quick_start/pricing)                                                                  |
 | **Small**  | [DeepSeek V4 Flash](https://api-docs.deepseek.com/quick_start/pricing) or [GLM-5.3 Flash](https://docs.z.ai/guides/llm/glm-5.3-flash) |
 
-
 > 💡 **These are recommendations, not hard rules.** Use the best model you have
 > access to that fits the task's complexity budget.
 
-
-
 ## 🌀 Dialectic of Cognition Methodology
-
-
 
 ### 📣 Motto
 
@@ -177,8 +171,6 @@ In agent terms:
 3. **Verify in practice** — A cold read of the new entry must be enough to spot the symptom and apply the fix. If not, refine until practice would confirm it.
 
 Abort gate before encoding: *can you state the rule without naming a specific file, function, class, variable, or endpoint?* If not, there is nothing generalizable to store — the value stays in the diff.
-
-
 
 ### Guidelines
 
@@ -200,25 +192,16 @@ tooling is missing (Makefile, lint config, lefthook pre-commit→verify). Packag
 are not the gate.
 - `/task-3-complete` **pushes** the completed branch by default (`--no-push` to skip) and always
 emits a **Manual test** section (or `Nothing to test` + why).
-- `/bootstrap-turboplan` creates the verify gate from seed files (Makefile, lint config, lefthook),
-using latest stable toolchain versions. For Go projects, the seed Makefile includes
-`lint`, `test`, `build`, `build-all` (multi-platform), and `verify` (= lint+test+build).
-Bootstrap ships this to the project root (from `templates/seeds/verify/` →
-`planning/verify-SEED/` after install — bootstrap must still copy/adapt to
+- `/bootstrap-turboplan` creates the verify gate from seed files (Makefile, lint config, lefthook),  
+using latest stable toolchain versions. For Go projects, the seed Makefile includes  
+`lint`, `test`, `build`, `build-all` (multi-platform), and `verify` (= lint+test+build).  
+Bootstrap ships this to the project root (from `templates/seeds/verify/` →  
+`planning/verify-SEED/` after install — bootstrap must still copy/adapt to  
 **repo root** + `lefthook install`).
 
-See `[METHODOLOGY.md](METHODOLOGY.md)`
-
-
-
-### 📕 Influence: *On Practice* (1937)
-
-The maintenance loop is deliberately patterned on the famous 1937 essay **"On Practice: On the Relation Between Knowledge and Practice, Between Knowing and Doing"**. The essay's argument is epistemological, not decorative: knowledge that never returns to practice becomes dogma; practice that never rises to theory stays a pile of anecdotes.
-
-**Overview of the text:** [PolSci Institute — *On Practice*: Epistemology and Theory of Knowledge](https://polsci.institute/political-theory/mao-epistemology-theory-of-knowledge/)
+### 📕 Influence
 
 Mapped onto this workflow:
-
 
 | Idea from *On Practice*                                                                                     | How it shows up here                                                                                           |
 | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -228,14 +211,11 @@ Mapped onto this workflow:
 | Oppose **dogmatism** (formulas without practice) and **empiricism** (fragmentary experience without theory) | Don't paste bookish rules that never matched this codebase; don't leave one-off fixes only in chat history     |
 | *Practice, knowledge, again practice, and again knowledge* — an ascending spiral                            | Rules improve session by session; `/dialectic-of-cognition` is the deliberate turn of that spiral              |
 
-
 Closing line of the essay (the spiral of cognition):
 
 > Discover the truth through practice, and again through practice verify and develop the truth. … Practice, knowledge, again practice, and again knowledge. This form repeats itself in endless cycles, and with each cycle the content of practice and knowledge rises to a higher level.
 
 That is the philosophical warrant for treating `.cursor/rules/` as a **material product of work on a stack** — not a static style guide dropped from outside.
-
-
 
 ### 🧰 What `/dialectic-of-cognition` does (summary)
 
@@ -252,12 +232,15 @@ If Modes A/B find nothing: *"Nothing to capture — session was routine."*
 ```
 .
 ├── scripts/
-│   └── install-into.sh ........... 🎯 One-shot installer (absolute project path)
+│   ├── install-into.sh ........... 🎯 One-shot installer (absolute project path)
+│   └── validate-skills.sh ........ 🧪 Structure check for skills, commit format, checklists
 ├── METHODOLOGY.md ................ 🧠 Why this works; entry points; work loop
 ├── templates/
 │   ├── seeds/ .................... 🌱 readme · gitignore · verify (Makefile / lefthook / golangci)
-│   ├── rules/ .................... 📜 Generic `general.mdc` + example domain spoke
+│   ├── checklists/ ............... ✅ definition of done · security · observability
+│   ├── rules/ .................... 📜 Hub, domain example, file-craft spokes, moment spokes
+│   ├── spoke-seeds/ .............. 📎 deprecation.mdc (copied live only for a removal)
 │   ├── skills/ ................... 🧩 Grill-me, bootstrap, setup-tasks, plan, execute, complete, dialectic, audit
-│   └── phases/ ................... 🗂️ INDEX.md skeleton + TXX-template.md
+│   └── phases/ ................... 🗂️ INDEX.md · TXX-template.md · intent-template.md
 ```
 

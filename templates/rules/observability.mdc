@@ -1,0 +1,35 @@
+---
+description: Long-running server, daemon, or worker paths. Attaches by glob only. Bootstrap deletes this file for a one-shot CLI or library.
+globs: {{OBSERVABILITY_GLOBS}}
+alwaysApply: false
+---
+
+# Observability
+
+Close-out yes/no list: `planning/checklists/observability.md`. This spoke is how to instrument the path while editing it.
+
+## Scope
+
+- Processes that keep running: servers, daemons, workers
+
+## Out of scope
+
+- One-shot commands and pure libraries. Close-out records **Nothing to observe** plus one sentence.
+
+## Invariants
+
+1. Success and failure are different log outcomes.
+2. A failure names the operation and the error class.
+3. Logs and metrics contain no credentials.
+4. An operator can tell whether the path worked without reading the source.
+5. Add the log or metric in the same slice as the path. Do not leave it for a later task.
+
+## Problem classes
+
+### `Failure is invisible`
+
+| Symptom | Cause | Fix |
+| ------- | ----- | --- |
+| The process continues and the operator sees no error | The failure path does not log | Log the operation and the error class on that path. Add a test or a manual check that shows the line. |
+
+<!-- last-verified: YYYY-MM -->
