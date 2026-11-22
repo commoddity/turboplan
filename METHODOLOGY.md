@@ -359,7 +359,7 @@ Mode A writes the class. Mode B may name files, routes, and components when the 
 
 The graph is a local index of product source, used when the question is "who calls this?" It does not replace the spokes.
 
-Install the free CLI yourself. PyPI package `graphifyy`, command `graphify`. Bootstrap and upgrade do not install it. Every call sets `GRAPHIFY_BACKEND=none`. Repository data stays on the machine. The pack runs two commands:
+`/bootstrap-turboplan` installs the free CLI when `graphify` is not already on PATH. PyPI package `graphifyy`, command `graphify`. `scripts/upgrade-into.sh` does not install it. Every call sets `GRAPHIFY_BACKEND=none`. Repository data stays on the machine. The pack runs two commands:
 
 ```bash
 GRAPHIFY_BACKEND=none graphify update .
@@ -368,7 +368,7 @@ GRAPHIFY_BACKEND=none graphify query "who calls this handler"
 
 `update` is the first build and every refresh. `query` reads `graphify-out/graph.json`. That directory is gitignored.
 
-Bootstrap copies `.graphifyignore` to the repo root so `.cursor/`, `planning/`, markdown, and `.mdc` files stay out of the scan, and it adds a lefthook post-commit line that runs the same `update` command. A missing CLI is a warning, not a failed bootstrap. Install it before T01 if you want the graph. T01 runs `update` once when skeleton source exists. An empty tree skips the build and does not fail T01. `make verify` remains the T01 bar. If `update` cannot create `graph.json`, record "graph absent" and continue.
+Bootstrap copies `.graphifyignore` to the repo root so `.cursor/`, `planning/`, markdown, and `.mdc` files stay out of the scan, and it adds a lefthook post-commit line that runs the same `update` command. It installs the CLI with `uv tool install graphifyy`, then `pipx install graphifyy`, then `python3 -m pip install --user graphifyy`, and records the path `command -v graphify` prints. If every installer fails, bootstrap still finishes and lists the errors. T01 runs `update` once when skeleton source exists. An empty tree skips the build and does not fail T01. `make verify` remains the T01 bar. If `update` cannot create `graph.json`, record "graph absent" and continue.
 
 A missing binary makes the post-commit hook red and does not undo the commit. The binary must be on the PATH lefthook uses.
 
@@ -402,8 +402,8 @@ the target repo.
 - **Verify gate**: root `Makefile` with `verify` target (lint + test + build),
   lint config, lefthook pre-commit → verify. A new check's failure text names the fix.
 - **Local code graph**: `.graphifyignore` at the repo root, `graphify-out/` gitignored,
-  lefthook post-commit runs `GRAPHIFY_BACKEND=none graphify update .`. The human
-  installs the free `graphify` CLI (PyPI `graphifyy`). A missing CLI is a warning.
+  lefthook post-commit runs `GRAPHIFY_BACKEND=none graphify update .`. Bootstrap
+  installs the free `graphify` CLI (PyPI `graphifyy`) when it is not on PATH.
 - **Toolchain**: latest stable for the project's language; document pins as concerns
 - **Gitignore**: always `.env*` + `tmp/` + `graphify-out/` + stack-specific artifacts
 - **Commit policy**: `/task-2-execute` commits locally on the stub branch.
@@ -439,7 +439,7 @@ the target repo.
 - Every named dependency has a `.cursor/rules/*.mdc` spoke with a docs URL that was opened
 - Root `README.md` present (banner + summary + TOC + emoji headers)
 - Root `.gitignore` covers secrets, `tmp/`, `graphify-out/`, and stack artifacts
-- Root `.graphifyignore` is present. A missing `graphify` CLI is recorded as a warning, not a failed bootstrap
+- Root `.graphifyignore` is present. `graphify` is on PATH, or the failed install attempts are listed as a concern
 - Domain Routing Map lists domain and dependency spokes; the craft table lists only file spokes that still exist; moment spokes are in neither table
 - `planning/phases/INDEX.md` has ordered tasks with Feature, Depends-on, Next, and slice shape
 - Every INDEX row has a stub file with acceptance criteria and a commits table

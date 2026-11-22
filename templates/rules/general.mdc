@@ -150,7 +150,7 @@ files, not with every prompt.
 {{BUILD_RUN_SNIPPET}}
 ```
 
-Code navigation uses the free local `graphify` CLI only (PyPI package `graphifyy`). Every call sets `GRAPHIFY_BACKEND=none`. Bootstrap does not install it. A missing CLI is a warning the human fixes before T01 builds the graph, not a failed bootstrap. The binary must be on the PATH lefthook uses. The only commands are `GRAPHIFY_BACKEND=none graphify update .` and `GRAPHIFY_BACKEND=none graphify query`. Any other `graphify` subcommand stops the step. No API key and no hosted service. A missing `graphify` binary makes the post-commit hook red and does not undo the commit.
+Code navigation uses the free local `graphify` CLI only (PyPI package `graphifyy`). Every call sets `GRAPHIFY_BACKEND=none`. Bootstrap installs that CLI when `graphify` is not already on PATH. The binary must be on the PATH lefthook uses. The only commands are `GRAPHIFY_BACKEND=none graphify update .` and `GRAPHIFY_BACKEND=none graphify query`. Any other `graphify` subcommand stops the step. No API key and no hosted service. A missing `graphify` binary makes the post-commit hook red and does not undo the commit.
 
 <!-- turboplan:graphify-query -->
 When `graphify-out/graph.json` exists and the task is a question about product source, run `GRAPHIFY_BACKEND=none graphify query` before the first search. Open files an `EXTRACTED` edge names. `INFERRED` and `AMBIGUOUS` edges are hints to open a file. They are not proof. The refresh and conflict rules live in `/dialectic-of-cognition`. The graph indexes Go, TypeScript, Astro, and other source files. It does not index `.cursor/`, `planning/`, or markdown.

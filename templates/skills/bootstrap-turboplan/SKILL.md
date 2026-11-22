@@ -231,9 +231,15 @@ Keep `planning/checklists/`, `planning/intents/`, and `planning/spoke-seeds/`.
      Graphify's own git hooks. A missing `graphify` binary makes that hook red
      and does not undo the commit. The binary must be on the PATH lefthook uses.  
    - Stack lint config (Go: **`.golangci.yml`**). Adapt if non-Go; do not skip.
-   - If `graphify` is not on PATH, say so in the bootstrap summary. Bootstrap
-     still completes. Do not pip-install it. Do not run any `graphify` subcommand
-     other than `update` and `query`. No API key and no hosted service.  
+   - If `command -v graphify` fails, install the free local CLI before
+     finishing. PyPI package `graphifyy`, command `graphify`. Try, in order,
+     `uv tool install graphifyy`, then `pipx install graphifyy`, then
+     `python3 -m pip install --user graphifyy`. Confirm `command -v graphify`
+     succeeds, and record that path in the summary so it is the PATH lefthook
+     uses. If every installer fails, record the failure under Bootstrap
+     concerns. Bootstrap still completes. Do not install a hosted service, do
+     not set an API key, and do not run any `graphify` subcommand other than
+     `update` and `query`.  
 3. **Go projects (mandatory Makefile shape):** start from `seeds/verify/Makefile`
    and keep (or equivalent) targets:
    - `lint` — golangci-lint  
@@ -366,7 +372,7 @@ humans changed — not only `.mdc` files).
 - [ ] Root `.gitignore` present (`.env`/variants, `tmp/`, `graphify-out/`, stack artifacts — merged if pre-existing)
 - [ ] Root `.graphifyignore` present
 - [ ] Lefthook post-commit runs `GRAPHIFY_BACKEND=none graphify update .`
-- [ ] `graphify` missing is a summary warning, not a failed bootstrap  
+- [ ] `graphify` is on PATH, or every install attempt failed and that failure is listed under Bootstrap concerns  
 - [ ] Every provided dependency/docs set has a spoke with **Docs (if stuck)** URL + README row  
 - [ ] Root `README.md` exists with ASCII banner, **Summary**, **TOC**, emoji headers, deps section  
 - [ ] No leftover deleted-stack names in rules/skills (grep)  
@@ -414,7 +420,7 @@ humans changed — not only `.mdc` files).
 - Makefile verify: present → `make verify` (= lint + test + build); Go also has `build-all`
 - lint config: .golangci.yml | <stack> | MISSING (fail)
 - lefthook: configured + installed → pre-commit runs make verify; post-commit runs `GRAPHIFY_BACKEND=none graphify update .`
-- graphify CLI: present | CLI missing (warning; human installs the free local CLI before T01's graph build)
+- graphify CLI: installed (`command -v` path) | install failed (concern; name the installer errors)
 - .graphifyignore: present
 - seeds: `templates/seeds/` → `planning/*-SEED*` → adapted to root
 - toolchain: {{LANGUAGE}} <version> (latest stable) | pinned concern: …

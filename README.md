@@ -127,7 +127,7 @@ behind each size tier.
 
 Turboplan keeps a code graph beside the repo so an agent can ask who calls a function before it walks the tree. The graph indexes Go, TypeScript, Astro, and the other source languages Graphify already parses. It does not index rules, skills, plans, or markdown.
 
-You install the CLI yourself. Bootstrap does not. The package on PyPI is `graphifyy`. The command is `graphify`. It is the free local tool only. Every call sets `GRAPHIFY_BACKEND=none`, so repository data stays on the machine. The only commands this pack runs are:
+`/bootstrap-turboplan` installs the CLI when `graphify` is not already on your PATH. The package on PyPI is `graphifyy`. The command is `graphify`. It is the free local tool only. Every call sets `GRAPHIFY_BACKEND=none`, so repository data stays on the machine. The only commands this pack runs are:
 
 ```bash
 GRAPHIFY_BACKEND=none graphify update .
@@ -138,7 +138,7 @@ GRAPHIFY_BACKEND=none graphify query "who calls this handler"
 
 What you should expect:
 
-- A missing CLI is a warning. Bootstrap still finishes. Install the CLI before T01 if you want the graph.
+- Bootstrap installs the CLI with `uv tool install graphifyy`, then `pipx install graphifyy`, then `python3 -m pip install --user graphifyy`. If all three fail, bootstrap still finishes and lists the errors. `scripts/upgrade-into.sh` does not install it.
 - T01 runs `update` once when source exists. An empty tree skips it. `make verify` is still the bar for T01.
 - If `update` cannot create the graph, the task records "graph absent" and continues.
 - After that, each commit refreshes the graph from lefthook's post-commit hook. A missing binary makes that hook red and does not undo the commit. The binary has to be on the PATH lefthook uses, not only in an interactive shell.
