@@ -1,0 +1,8 @@
+# Code graph only. Rules, skills, plans, and markdown stay out.
+# Do not map .mdc in .graphifyrc. That mapping takes Graphify's model path.
+
+.cursor/
+planning/
+graphify-out/
+*.md
+*.mdc

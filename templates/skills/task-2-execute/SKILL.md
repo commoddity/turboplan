@@ -30,6 +30,14 @@ the current model is small.
 
 ## Hard constraints
 
+<!-- turboplan:execute-ponytail-graph -->
+Ponytail applies only to product source in this slice (Go, TypeScript, Astro, and the other languages the hub names). It does not apply to `.cursor/rules/`, `.cursor/skills/`, `planning/`, or the README. It does not push back on `make verify`, the failing test, the commit subject, or an irreversible pause.
+
+When `graphify` is on the PATH, run `GRAPHIFY_BACKEND=none graphify update .` after the slice’s source files are written and before the next search in this session. The update is code-only. Then `GRAPHIFY_BACKEND=none graphify query` before the first search for a question about that source. Open files an `EXTRACTED` edge names. Any other `graphify` subcommand stops the step.
+<!-- /turboplan:execute-ponytail-graph -->
+
+A failed `graphify update .` is "graph stale" or "graph absent". It is not a verify failure, and it is not a reason to try another `graphify` subcommand. A missing CLI is reported, not a red `make verify`.
+
 <!-- BOOTSTRAP: replace with product-specific constraints. -->
 
 1. Obey the Karpathy Behavioral Guidelines in `.cursor/rules/general.mdc`.

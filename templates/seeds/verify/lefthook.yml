@@ -1,9 +1,17 @@
 # https://lefthook.dev/
-# Install once: make install-hooks   (or: lefthook install)
+# Install once: make install-hooks (or: lefthook install)
 # Bootstrap AC: pre-commit MUST run the full verify suite (lint + test).
+# Post-commit refreshes the local code graph. Do not install Graphify's own git hooks.
+# A missing graphify binary makes this hook red and does not undo the commit.
+# The binary must be on the PATH lefthook uses, not only an interactive shell.
 
 pre-commit:
   parallel: false
   commands:
     verify:
       run: make verify
+
+post-commit:
+  commands:
+    graphify-update:
+      run: GRAPHIFY_BACKEND=none graphify update .

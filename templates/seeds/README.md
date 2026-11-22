@@ -7,7 +7,7 @@ must adapt them to the **repo root** (seeds under `planning/` alone are not enou
 | ----------- | ----------- | ------------------- |
 | [`readme/`](readme/) | `planning/README-SEED.md` | Root `README.md` |
 | [`gitignore/`](gitignore/) | `planning/gitignore-SEED` | Root `.gitignore` |
-| [`verify/`](verify/) | `planning/verify-SEED/` | Root `Makefile`, `lefthook.yml`, `.golangci.yml` (Go) |
+| [`verify/`](verify/) | `planning/verify-SEED/` | Root `Makefile`, `lefthook.yml`, `.golangci.yml` (Go), `.graphifyignore` |
 
 **Verify contract:** execute/complete hard-abort if root verify tooling is missing.
 `make verify` must mean lint + test (+ build when applicable) — package tests alone

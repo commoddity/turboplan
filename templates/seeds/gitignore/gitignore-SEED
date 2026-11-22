@@ -11,6 +11,7 @@
 # --- local scratch (always) ---
 tmp/
 temp/
+graphify-out/
 *.tmp
 *.swp
 *~

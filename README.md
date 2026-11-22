@@ -11,7 +11,8 @@ It allows planning and execution of complex software engineering features using 
 - 🎯 **Context before code** — the agent refuses to build without a goal, scope, and constraints
 - 🏗️ **Build in phases** — `plan → execute → complete`, one verifiable layer at a time
 - 🤖 **Subagents do the legwork** — explorers, reviewers, and verifiers work in parallel; the parent keeps design
-- ♻️ **Evolve as you learn** — hard-won patterns get captured back into the rules
+- ♻️ **Evolve as you learn** — a repeated miss becomes a check, a pointer, or a problem class
+- 🔎 **Local code graph** — a free on-machine index of product source; rules stay the authority
 - 🧩 **Product-agnostic** — no sample product bundled; adapts to your stack
 
 **📖 Methodology**
@@ -22,6 +23,7 @@ It allows planning and execution of complex software engineering features using 
 
 - [⚡ Quickstart](#-quickstart)
 - [🔁 Running the Work Loop](#-running-the-work-loop)
+- [🔎 Local code graph](#-local-code-graph)
 - [🔌 Cursor Configuration](#-cursor-configuration)
 - [🛡️ Hard Rules](#️-hard-rules)
 - [🌀 Dialectic of Cognition Methodology](#-dialectic-of-cognition-methodology)
@@ -38,7 +40,13 @@ One argument: the **absolute path** of the target project.
 ./scripts/install-into.sh /absolute/path/to/YOUR_PROJECT
 ```
 
-The script copies rules, skills, and phase templates into your repo.
+The script copies rules, skills, and phase templates into your repo. It does not build a code graph.
+
+A project that already has `.cursor/rules/general.mdc` and the dialectic skill is already on Turboplan. Do not run the installer again. Upgrade it:
+
+```bash
+./scripts/upgrade-into.sh /absolute/path/to/YOUR_PROJECT
+```
 
 ![Installing Turboplan](.github/img/turboplan.gif)  
 *Installing Turboplan*
@@ -93,6 +101,8 @@ period at the end, no second sentence. Machine check:
 `/task-3-complete` adds the close-out commit in the same shape, then pushes.
 Execute does not push.
 
+During execute, **ponytail** is the size rule for product source: the smallest change that still reaches callers, the failing test, and `make verify`. It does not shorten rules, skills, plans, or the README, and it does not skip an irreversible pause.
+
 ### Model split
 
 See [Model recommendations](#model-recommendations) for the specific providers and models
@@ -112,6 +122,27 @@ behind each size tier.
 > For full work loop details see [METHODOLOGY.md#-running-the-loop](METHODOLOGY.md#-running-the-loop).
 > For how skills delegate to subagents see
 > `METHODOLOGY.md` [— Subagent delegation](METHODOLOGY.md#4--subagent-delegation).
+
+## 🔎 Local code graph
+
+Turboplan keeps a code graph beside the repo so an agent can ask who calls a function before it walks the tree. The graph indexes Go, TypeScript, Astro, and the other source languages Graphify already parses. It does not index rules, skills, plans, or markdown.
+
+You install the CLI yourself. Bootstrap does not. The package on PyPI is `graphifyy`. The command is `graphify`. It is the free local tool only. Every call sets `GRAPHIFY_BACKEND=none`, so repository data stays on the machine. The only commands this pack runs are:
+
+```bash
+GRAPHIFY_BACKEND=none graphify update .
+GRAPHIFY_BACKEND=none graphify query "who calls this handler"
+```
+
+`update` rebuilds the graph from source on the machine. `query` reads `graphify-out/graph.json`. That folder is gitignored. Do not commit it.
+
+What you should expect:
+
+- A missing CLI is a warning. Bootstrap still finishes. Install the CLI before T01 if you want the graph.
+- T01 runs `update` once when source exists. An empty tree skips it. `make verify` is still the bar for T01.
+- If `update` cannot create the graph, the task records "graph absent" and continues.
+- After that, each commit refreshes the graph from lefthook's post-commit hook. A missing binary makes that hook red and does not undo the commit. The binary has to be on the PATH lefthook uses, not only in an interactive shell.
+- An `EXTRACTED` edge is a file to open. An `INFERRED` edge is a hint. The spokes remain the rules. The graph does not author them.
 
 ## 🔌 Cursor Configuration
 
@@ -134,6 +165,8 @@ Combined with the hub's routing map, the evolving `.cursor/rules/*.mdc` files ar
 phases + skills wiring + dependency spokes from docs + human `README.md` +
 `.gitignore` + **root verify gate** (Makefile / lefthook / lint config; not the app itself).
 - 🧪 Execute/complete **fail closed** if verify tooling is missing — package tests alone are not green.
+- 📏 **Ponytail** sizes product source during execute. It does not size rules, skills, plans, or the README.
+- 🔎 **Code graph** stays on the machine. Free local `graphify` CLI only. `GRAPHIFY_BACKEND=none`. Commands are `update` and `query`. Do not commit `graphify-out/`.
 - 👥 **Rules/skills = agents; README = humans** — both evolve; keep Dependencies & docs
 and architecture narrative aligned with `.cursor/rules/` as the project grows.
 
@@ -170,7 +203,7 @@ In agent terms:
 2. **General → particular** — That class is written into the matching `.mdc` rule (symptom / cause / fix), so the next session can recognize and act without rediscovering it.
 3. **Verify in practice** — A cold read of the new entry must be enough to spot the symptom and apply the fix. If not, refine until practice would confirm it.
 
-Abort gate before encoding: *can you state the rule without naming a specific file, function, class, variable, or endpoint?* If not, there is nothing generalizable to store — the value stays in the diff.
+Abort gate before encoding: a recognition class must be statable without a specific file, function, class, variable, or endpoint. A map entry may name files, routes, and components.
 
 ### Guidelines
 
@@ -221,8 +254,9 @@ That is the philosophical warrant for treating `.cursor/rules/` as a **material 
 
 Authority: Rule Maintenance in the installed `general.mdc`. Invoke manually after non-trivial sessions; `/task-3-complete` runs it as part of close-out.
 
-- **Mode A** — After qualifying debugging (>5 min, docs consulted, multiple attempts, or non-obvious root cause): extract class → route via the table in `general.mdc` → encode / verify / integrity checks into **the project's** `.cursor/rules/*.mdc`.
-- **Mode B** — After structural code changes: ask whether any encoded pattern is now stale, incomplete, or contradicted; refine or add only what generalizes.
+- **Disposition** — Before Mode A, choose one destination. A mistake `make verify` can catch becomes a check, and that check's failure text names the fix. A slow search becomes one pointer in the spoke that already owns the path. A failure the next agent must recognize stays a symptom / cause / fix row.
+- **Mode A** — After qualifying debugging (>5 min, docs consulted, multiple attempts, or non-obvious root cause): extract a class that does not need a file name, then encode it.
+- **Mode B** — After structural code changes: update the map. A map entry may name files, routes, and components. It does not have to pass the class test.
 - **Shared** — Prefer refining overlapping entries over proliferating duplicates; propose a human-approved split if a rule file exceeds ~600 lines (earlier if approaching ~550); timestamp `<!-- last-verified: YYYY-MM -->`; review entries older than six months when working in that domain.
 
 If Modes A/B find nothing: *"Nothing to capture — session was routine."*
@@ -233,10 +267,11 @@ If Modes A/B find nothing: *"Nothing to capture — session was routine."*
 .
 ├── scripts/
 │   ├── install-into.sh ........... 🎯 One-shot installer (absolute project path)
+│   ├── upgrade-into.sh ........... ⬆ Existing Turboplan project → methodology 2
 │   └── validate-skills.sh ........ 🧪 Structure check for skills, commit format, checklists
 ├── METHODOLOGY.md ................ 🧠 Why this works; entry points; work loop
 ├── templates/
-│   ├── seeds/ .................... 🌱 readme · gitignore · verify (Makefile / lefthook / golangci)
+│   ├── seeds/ .................... 🌱 readme · gitignore · verify (Makefile / lefthook / golangci / graphifyignore)
 │   ├── checklists/ ............... ✅ definition of done · security · observability
 │   ├── rules/ .................... 📜 Hub, domain example, file-craft spokes, moment spokes
 │   ├── spoke-seeds/ .............. 📎 deprecation.mdc (copied live only for a removal)

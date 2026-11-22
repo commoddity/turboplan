@@ -126,13 +126,64 @@ if [[ ! -f templates/spoke-seeds/deprecation.mdc ]]; then
 fi
 
 if grep -R -n -E -i 'addyosmani|agent-skills|using-agent-skills' \
-  --include='*.md' --include='*.mdc' \
-  templates METHODOLOGY.md README.md scripts/install-into.sh >/dev/null; then
+  --include='*.md' --include='*.mdc' --include='*.sh' \
+  templates METHODOLOGY.md README.md scripts/install-into.sh scripts/upgrade-into.sh >/dev/null; then
   grep -R -n -E -i 'addyosmani|agent-skills|using-agent-skills' \
-    --include='*.md' --include='*.mdc' \
-    templates METHODOLOGY.md README.md scripts/install-into.sh >&2 || true
+    --include='*.md' --include='*.mdc' --include='*.sh' \
+    templates METHODOLOGY.md README.md scripts/install-into.sh scripts/upgrade-into.sh >&2 || true
   err "disallowed external name present"
 fi
+
+for phrase in \
+  "Ponytail is the size rule for product source" \
+  "Never cut validation at a trust boundary" \
+  "turboplan-methodology: 2"
+do
+  if ! grep -q -F "${phrase}" templates/rules/general.mdc; then
+    err "hub missing ${phrase}"
+  fi
+done
+
+if ! grep -q -F "Ponytail applies only to product source" templates/skills/task-2-execute/SKILL.md; then
+  err "execute missing ponytail product-source sentence"
+fi
+if ! grep -q -F "graphify update ." templates/skills/task-2-execute/SKILL.md; then
+  err "execute missing graphify update"
+fi
+if ! grep -q -F "GRAPHIFY_BACKEND=none" templates/skills/task-2-execute/SKILL.md; then
+  err "execute missing GRAPHIFY_BACKEND=none"
+fi
+
+if [[ ! -f templates/seeds/verify/graphifyignore ]]; then
+  err "missing graphifyignore seed"
+fi
+if ! grep -q -F "GRAPHIFY_BACKEND=none graphify update ." templates/seeds/verify/lefthook.yml; then
+  err "lefthook seed missing graphify update command"
+fi
+if ! grep -q -F "graphify-out/" templates/seeds/gitignore/gitignore-SEED; then
+  err "gitignore seed missing graphify-out/"
+fi
+
+graphify_name=graphify
+lang_name=language
+mdc_ext=mdc
+banned_graph=(
+  "${graphify_name} extract"
+  "/${graphify_name}"
+  "${graphify_name} hook install"
+  "api.${graphify_name}.com"
+  "${lang_name}.${mdc_ext}"
+)
+for phrase in "${banned_graph[@]}"; do
+  hits="$(grep -R -n -F "${phrase}" templates METHODOLOGY.md README.md scripts || true)"
+  if [[ "${phrase}" == "/${graphify_name}" ]]; then
+    hits="$(printf '%s\n' "${hits}" | grep -v 'graphifyignore' || true)"
+  fi
+  if [[ -n "${hits}" ]]; then
+    printf '%s\n' "${hits}" >&2
+    err "disallowed graphify phrase present"
+  fi
+done
 
 if [[ "${fail}" -eq 0 ]]; then
   printf 'validate-skills: ok\n'

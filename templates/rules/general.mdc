@@ -3,6 +3,8 @@ description: Always-applied project routing, automation, and safety rules
 alwaysApply: true
 ---
 
+<!-- turboplan-methodology: 2 -->
+
 # {{PRODUCT_NAME}} — Agent Rules
 
 This file is the always-on entry for Cursor (`.cursor/rules/general.mdc`).
@@ -23,6 +25,18 @@ either table.
 ---
 
 # Karpathy Behavioral Guidelines
+
+<!-- turboplan:ponytail -->
+Ponytail is the size rule for product source during `/task-2-execute`. Karpathy’s four sections stay the caution. Ponytail decides how small the code diff is.
+
+It applies to Go, TypeScript, Astro, and the other source languages this project builds. Take the first option that fully works: skip what nobody asked for, reuse a helper this repo already has, use the standard library, use an installed dependency, one line when that is the whole fix, otherwise the minimum that works. The diff still reaches callers, the failing test a behavior change needs, and the verify gate.
+
+It does not apply to `.cursor/rules/`, `.cursor/skills/`, `planning/`, or the README. Those files keep every fact a capture step wrote. When one slice touches both a source file and a spoke, ponytail sizes the source file. The spoke keeps symptom, cause, and fix.
+
+Never cut validation at a trust boundary, error handling that prevents data loss, security, accessibility, or anything the human asked for. Irreversible steps and `make verify` are part of the smallest complete change.
+
+Intensity is full. Lite and ultra are not installed. Ultra, if a later change adds it, may push back on product scope inside a slice and may not push back on the verify gate, the failing test, the commit subject, an irreversible pause, or the text of a rule, skill, or plan.
+<!-- /turboplan:ponytail -->
 
 These guidelines apply **at all times** when coding in an agentic environment.
 
@@ -135,6 +149,12 @@ files, not with every prompt.
 ```bash
 {{BUILD_RUN_SNIPPET}}
 ```
+
+Code navigation uses the free local `graphify` CLI only (PyPI package `graphifyy`). Every call sets `GRAPHIFY_BACKEND=none`. Bootstrap does not install it. A missing CLI is a warning the human fixes before T01 builds the graph, not a failed bootstrap. The binary must be on the PATH lefthook uses. The only commands are `GRAPHIFY_BACKEND=none graphify update .` and `GRAPHIFY_BACKEND=none graphify query`. Any other `graphify` subcommand stops the step. No API key and no hosted service. A missing `graphify` binary makes the post-commit hook red and does not undo the commit.
+
+<!-- turboplan:graphify-query -->
+When `graphify-out/graph.json` exists and the task is a question about product source, run `GRAPHIFY_BACKEND=none graphify query` before the first search. Open files an `EXTRACTED` edge names. `INFERRED` and `AMBIGUOUS` edges are hints to open a file. They are not proof. The refresh and conflict rules live in `/dialectic-of-cognition`. The graph indexes Go, TypeScript, Astro, and other source files. It does not index `.cursor/`, `planning/`, or markdown.
+<!-- /turboplan:graphify-query -->
 
 ---
 
@@ -318,9 +338,15 @@ rule updates — they add noise without improving recognition.
 
 ### 0. Abort gate — is this generalizable?
 
-Before extracting a principle, apply the one-sentence test: **can you state the
-rule without naming a specific file, function, class, variable, or endpoint?**
-If not, stop here — there is nothing to encode. The value stays in the diff.
+<!-- turboplan:abort-gate -->
+A recognition class must be statable in one sentence without a specific file, function, class, variable, or endpoint. If it cannot, it is not encoded. The value stays in the diff.
+
+A map entry may name files, routes, and components. A map entry that fails the class test is still a valid map entry. Mode B in `/dialectic-of-cognition` writes map entries. Mode A writes classes.
+<!-- /turboplan:abort-gate -->
+
+<!-- turboplan:disposition-principle -->
+A mechanical miss becomes a check in the repo’s verify gate (`Makefile`, lefthook, the lint config). A recognition class stays a symptom / cause / fix entry. A file-specific fact stays in the spoke whose globs own that path. The disposition procedure is `/dialectic-of-cognition`. Do not add it to this hub.
+<!-- /turboplan:disposition-principle -->
 
 ### 1. Particular → General (abstract)
 
@@ -391,7 +417,7 @@ split to the user. Never split without approval.
 | `/task-1-plan` | `.cursor/skills/task-1-plan/SKILL.md` | Plan one phase task, including commit subjects |
 | `/task-2-execute` | `.cursor/skills/task-2-execute/SKILL.md` | Implement one phase task; local commits `Fnn Tnn Sn`; no push |
 | `/task-3-complete` | `.cursor/skills/task-3-complete/SKILL.md` | Definition of Done + dialectic + close-out commit + push (default) + manual test + next branch |
-| `/dialectic-of-cognition` | `.cursor/skills/dialectic-of-cognition/SKILL.md` | Encode session learnings into rules |
+| `/dialectic-of-cognition` | `.cursor/skills/dialectic-of-cognition/SKILL.md` | Disposition, then encode session learnings into rules |
 | `/audit-rules` | `.cursor/skills/audit-rules/SKILL.md` | Read-only audit of rules/skills vs tree |
 | `/grill-me` | `.cursor/skills/grill-me/SKILL.md` | Design-tree interview until an explicit yes; writes planning/intents/Fnn.md |
 | `/setup-tasks` | `.cursor/skills/setup-tasks/SKILL.md` | Confirmed feature intent → phase stubs appended to INDEX |

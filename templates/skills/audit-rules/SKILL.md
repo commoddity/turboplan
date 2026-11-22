@@ -74,6 +74,13 @@ Extract from every skill: frontmatter, path refs, tool allowances.
   shape and feature ids on INDEX
 - **Audience split:** named deps appear in both `.cursor/rules/*.mdc` and README
   Dependencies & docs (flag one-sided coverage as `GAP`)
+- **Methodology v2:** hub missing `turboplan-methodology: 2` is `GAP`. Dialectic
+  skill missing the `turboplan:disposition` marker is `GAP`. A problem class
+  buried in prose, a sentence that only restates `make verify`, a verify check
+  whose failure text does not name the fix, or a spoke past ~550 lines is `GAP`
+  with a note. Do not delete it. Do not flag a missing committed `graphify-out/`.
+  Its absence from git is correct. A graph edge is not evidence that a latent
+  bug still applies.
 
 ## Phase 4 — Contradictions
 
@@ -96,6 +103,7 @@ End with counts summary.
 | “This entry looks unused, I’ll delete it.” | Flag it. Humans delete. |
 | “The lint config is missing because the app is not scaffolded yet.” | Missing Makefile, hook, or the hub’s lint config is `BROKEN`. Missing product source before T01 is `PENDING_SCAFFOLD`. |
 | “A skill without a pressure section is fine if the procedure is clear.” | The four anatomy headings are the check. Flag `MISSING`. |
+| “The customized skill has no disposition marker, I’ll paste the stock skill over it.” | Flag `GAP`. Humans merge. The audit does not overwrite. |
 
 ## Red flags
 

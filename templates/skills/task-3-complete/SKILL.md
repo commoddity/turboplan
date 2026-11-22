@@ -120,7 +120,7 @@ need the build rule. Leave `debug.mdc`, `review.mdc`, and `decisions.mdc` closed
 
 ### 4. Dialectic
 
-Fully execute `.cursor/skills/dialectic-of-cognition/SKILL.md` (Modes A and B).
+Fully execute `.cursor/skills/dialectic-of-cognition/SKILL.md` (Modes A and B). Disposition runs inside that skill before Modes A and B, and a routine session is still the one-line result. Do not commit `graphify-out/`.
 
 ### 5. Downstream sync
 

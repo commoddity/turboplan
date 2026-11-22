@@ -128,13 +128,16 @@ classification **decisions** on the parent.
 
 Update `.cursor/rules/general.mdc`:
 
-- **Strip every reference to Turboplan** — this file is about THIS product, not
+- **Strip every reference to Turboplan** from prose the human reads — this file is about THIS product, not
   the methodology that bootstrapped it. No "Turboplan hub", no "Turboplan
   project", no "bootstrap-turboplan" in the safety rails exception list.
+  Keep the HTML comments `turboplan:` and `turboplan-methodology: 2`, and the
+  marked blocks they wrap (ponytail, abort gate, disposition principle, graphify query).
+  Keep those blocks when rewriting Architecture and Build & Run.
 - **Product name, architecture, build/verify, safety no-gos** — all project-specific
 - **Routing Map + Problem Class table** for new spokes (include every dep spoke)
 - **Skills inventory** — list all skills that exist in `.cursor/skills/`
-- **Keep these hub sections intact:** Karpathy Behavioral Guidelines, Definition of Done, Commit messages (including the machine check), Irreversible steps, Safety / Workflow Rails, Rule Maintenance steps 0–7, the moment-spoke sentence under **Read Rules Before You Act**, and the **Craft spokes** table. Fill `{{QUALITY_BAR}}` from the intent file. Name the lint config file in Build & Run so execute and complete can require it. Fill craft globs from the real tree. Delete a craft row when you delete that file. Do not list `debug.mdc`, `review.mdc`, or `decisions.mdc` in the craft table or the domain routing map. Do not add craft files to the skills inventory.
+- **Keep these hub sections intact:** Karpathy Behavioral Guidelines, Definition of Done, Commit messages (including the machine check), Irreversible steps, Safety / Workflow Rails, Rule Maintenance steps 0–7, the moment-spoke sentence under **Read Rules Before You Act**, the **Craft spokes** table, and the `turboplan:` marker blocks. Fill `{{QUALITY_BAR}}` from the intent file. Name the lint config file in Build & Run so execute and complete can require it. Fill craft globs from the real tree. Delete a craft row when you delete that file. Do not list `debug.mdc`, `review.mdc`, or `decisions.mdc` in the craft table or the domain routing map. Do not add craft files to the skills inventory. The dialectic inventory purpose stays "Disposition, then encode session learnings into rules."
 - **Layered delivery**: reference `planning/phases/INDEX.md` only. Do NOT copy
   task IDs, layer tables, or phase details into the hub. The INDEX header
   carries slice shape; the hub points at it.
@@ -217,13 +220,20 @@ Keep `planning/checklists/`, `planning/intents/`, and `planning/spoke-seeds/`.
 2. **Ship the verify gate at project root** (adapt seeds; do not leave them only
    under `planning/`):
    - Prefer pack seeds: `templates/seeds/verify/` (after install:
-     `planning/verify-SEED/`) — `Makefile`, `lefthook.yml`, `golangci.yml` →
-     root as `Makefile`, `lefthook.yml`, `.golangci.yml` (rename for Go).  
+     `planning/verify-SEED/`) — `Makefile`, `lefthook.yml`, `golangci.yml`,
+     `graphifyignore` → root as `Makefile`, `lefthook.yml`, `.golangci.yml`
+     (rename for Go), and `.graphifyignore`.  
    - Root **`Makefile`** must expose **`verify`** that runs **lint + test**
      (+ build when applicable). Document `make verify` and `make install-hooks`
      in hub Build & Run **and** README.  
-   - Root **`lefthook.yml`**: pre-commit → `make verify` (not ad-hoc partial checks).  
-   - Stack lint config (Go: **`.golangci.yml`**). Adapt if non-Go; do not skip.  
+   - Root **`lefthook.yml`**: pre-commit → `make verify` (not ad-hoc partial checks).
+     Post-commit runs `GRAPHIFY_BACKEND=none graphify update .`. Do not install
+     Graphify's own git hooks. A missing `graphify` binary makes that hook red
+     and does not undo the commit. The binary must be on the PATH lefthook uses.  
+   - Stack lint config (Go: **`.golangci.yml`**). Adapt if non-Go; do not skip.
+   - If `graphify` is not on PATH, say so in the bootstrap summary. Bootstrap
+     still completes. Do not pip-install it. Do not run any `graphify` subcommand
+     other than `update` and `query`. No API key and no hosted service.  
 3. **Go projects (mandatory Makefile shape):** start from `seeds/verify/Makefile`
    and keep (or equivalent) targets:
    - `lint` — golangci-lint  
@@ -266,7 +276,8 @@ as a starting checklist, then **adapt with best judgment** for this product.
 **Always include (unless the user explicitly wants otherwise):**
 
 - Secrets / env: `.env`, `.env.*` (optionally allow `!.env.example` / `!.env.ref`)  
-- Scratch: root-level `tmp/` (and similar local scratch dirs)  
+- Scratch: root-level `tmp/` (and similar local scratch dirs)
+- Local code graph: `graphify-out/` when that line is absent  
 
 **Stack-aware (enable what applies):**
 
@@ -305,6 +316,7 @@ It creates the minimal runnable program so that `make verify` passes:
 - Other stacks: the minimal entrypoint and test that make `make verify` pass.
   No business logic.
 - After T01, `make verify` must pass (lint + test + build on the skeleton).
+- T01 acceptance includes: when `graphify` is on the PATH and the skeleton source exists, run `GRAPHIFY_BACKEND=none graphify update .` once. If that fails because there is no graph yet, record "graph absent" and continue. An empty source tree skips the build and does not fail T01. `make verify` passing remains the T01 bar. Do not call any other `graphify` subcommand.
 4. Create each stub from the task template: Feature, Description, Requirements,
    Acceptance Criteria (the thing), Definition of Done pointer, empty Execution
    plan, Commits table, Depends-on, Next, Layer, Irreversible, Behavior change.
@@ -351,13 +363,16 @@ humans changed — not only `.mdc` files).
       lefthook (or approved equivalent) installed and runs that verify on pre-commit
       (note: `make verify` may fail — no source code yet; T01 makes it pass)  
 - [ ] Primary language (and other baseline tools) at **latest stable**; deps installed at current stables (or concern documented)  
-- [ ] Root `.gitignore` present (`.env`/variants, `tmp/`, stack artifacts — merged if pre-existing)  
+- [ ] Root `.gitignore` present (`.env`/variants, `tmp/`, `graphify-out/`, stack artifacts — merged if pre-existing)
+- [ ] Root `.graphifyignore` present
+- [ ] Lefthook post-commit runs `GRAPHIFY_BACKEND=none graphify update .`
+- [ ] `graphify` missing is a summary warning, not a failed bootstrap  
 - [ ] Every provided dependency/docs set has a spoke with **Docs (if stuck)** URL + README row  
 - [ ] Root `README.md` exists with ASCII banner, **Summary**, **TOC**, emoji headers, deps section  
 - [ ] No leftover deleted-stack names in rules/skills (grep)  
 - [ ] Every INDEX row has a stub  
 - [ ] Depends-on graph acyclic; T01 actionable  
-- [ ] No references to "Turboplan" in `.cursor/rules/general.mdc` (aside from the skills inventory which lists `bootstrap-turboplan` as a skill name)  
+- [ ] No references to "Turboplan" in `.cursor/rules/general.mdc` prose (aside from the skills inventory which lists `bootstrap-turboplan` as a skill name). HTML comments `turboplan:` and `turboplan-methodology: 2` stay.  
 - [ ] Hub states stack choices as facts ("Uses Go 1.26+, React 19") not as methodology preferences ("Prefer Go", "Astro vs Vue vs Wails")
 - [ ] "Karpathy Behavioral Guidelines" heading present in hub (not "Behavioral Guidelines")  
 - [ ] No task IDs or layer tables in general.mdc (INDEX.md is the sole source of truth)  
@@ -398,7 +413,9 @@ humans changed — not only `.mdc` files).
 - git: initialized | already present
 - Makefile verify: present → `make verify` (= lint + test + build); Go also has `build-all`
 - lint config: .golangci.yml | <stack> | MISSING (fail)
-- lefthook: configured + installed → pre-commit runs make verify
+- lefthook: configured + installed → pre-commit runs make verify; post-commit runs `GRAPHIFY_BACKEND=none graphify update .`
+- graphify CLI: present | CLI missing (warning; human installs the free local CLI before T01's graph build)
+- .graphifyignore: present
 - seeds: `templates/seeds/` → `planning/*-SEED*` → adapted to root
 - toolchain: {{LANGUAGE}} <version> (latest stable) | pinned concern: …
 - packages: latest stable baseline | concern: …

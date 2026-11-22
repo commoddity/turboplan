@@ -106,12 +106,12 @@ flowchart LR
 | Skill                     | When                            | Recommended model                                                         | Does                                                                              |
 | ------------------------- | ------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | `/grill-me`               | Before `/bootstrap-turboplan` or `/setup-tasks` | Large                                                                     | Design-tree interview; explicit yes writes `planning/intents/Fnn.md` |
-| `/bootstrap-turboplan`    | New project                     | Large                                                                     | Confirmed intent → rules + phases + README + verify gate |
+| `/bootstrap-turboplan`    | New project                     | Large                                                                     | Confirmed intent → rules + phases + README + verify gate + local code graph |
 | `/setup-tasks`            | New feature in existing project | Large                                                                     | Confirmed intent → new phase stubs appended to INDEX |
 | `/task-1-plan TXX`        | Before coding                   | Medium (large only for complex tasks)                                     | Reality-check; handoff-ready plan, including commit subjects |
-| `/task-2-execute TXX`     | After plan                      | Medium or small                                                           | Follow the plan; red test for behavior; local `Fnn Tnn Sn` commits; `make verify`; no push |
-| `/task-3-complete TXX`    | After execute                   | Medium or small                                                           | Definition of done; dialectic; close-out commit; push (default); manual test; next branch |
-| `/dialectic-of-cognition` | End of hard sessions            | —                                                                         | Particular → general → encode into spokes                                         |
+| `/task-2-execute TXX`     | After plan                      | Medium or small                                                           | Follow the plan; ponytail on product source; red test; local commits; `make verify`; refresh the local graph; no push |
+| `/task-3-complete TXX`    | After execute                   | Medium or small                                                           | Definition of done; disposition then dialectic; close-out commit; push (default); manual test; next branch |
+| `/dialectic-of-cognition` | End of hard sessions            | —                                                                         | Disposition, then encode a class or a map entry into spokes |
 | `/audit-rules`            | Periodically                    | —                                                                         | Read-only audit of rules/skills vs tree                                           |
 
 > 💡 See [README: Model recommendations](README.md#model-recommendations) for which
@@ -236,9 +236,14 @@ specific providers/models correspond to each size tier — these are recommendat
    criteria need more than five bullets, or two independent subsystems are in play.
 
 2. **Execute** (`/task-2-execute TXX`): medium or small. If the plan is thorough,
-   medium is usually sufficient. Follow the plan exactly. For a behavior change,
-   see the new test fail, then make it pass. Run `make verify` before each
-   commit. Hard-abort if the verify toolchain is missing. Commit each green
+   medium is usually sufficient. Follow the plan exactly. Ponytail sizes the
+   product-source diff and leaves rules, skills, plans, and the README at the
+   length the capture step wrote. For a behavior change, see the new test fail,
+   then make it pass. Run `make verify` before each commit. Hard-abort if the
+   verify toolchain is missing. When the free local `graphify` CLI is on the
+   PATH, refresh the code graph with `GRAPHIFY_BACKEND=none graphify update .`
+   after the slice is written and before the next search. A failed refresh is
+   "graph absent" or "graph stale". It is not a failed verify. Commit each green
    slice locally on the stub branch. Do not push. Pause for an explicit yes
    before auth changes, destructive migrations, deletions, payments, secrets,
    or anything `git revert` cannot undo. When verify fails: reproduce,
@@ -246,9 +251,10 @@ specific providers/models correspond to each size tier — these are recommendat
 
 3. **Complete** (`/task-3-complete TXX`): medium or small. The harder the execution
    was, the more dialectic learning to apply. Re-verify, apply the definition
-   of done, run dialectic of cognition, mark INDEX ✅, commit the close-out in
-   the same subject format, push (default; `--no-push` to skip), emit a manual
-   test section, switch to the next stub-stem branch.
+   of done, run dialectic of cognition (disposition first, then Modes A and B),
+   mark INDEX ✅, commit the close-out in the same subject format, push
+   (default; `--no-push` to skip), emit a manual test section, switch to the
+   next stub-stem branch. Do not commit `graphify-out/`.
 
 - One task InProgress at a time unless the human says otherwise
 - Work on `<stub-stem>` branches — never commit on `main`/`master`
@@ -332,13 +338,43 @@ Rules improve over time through the dialectic of cognition:
 
 The hub carries the full Rule Maintenance procedure (steps 0–7). Summary:
 
-1. **Abort gate** — can you state the rule without naming a specific file/function?
+1. **Abort gate** — a recognition class must be statable without a specific file or function. A map entry may name files, routes, and components.
 2. **Particular → general** — extract the problem *class*, not the instance
 3. **Encode** — symptom / cause / fix table + `<!-- last-verified: YYYY-MM -->`
 4. **Verify** — would a cold-read AI recognize and apply it?
 5. **Contradictions / dedupe / decay / split** — rules stay alive
 
 Harness: `/dialectic-of-cognition` (also run from `/task-3-complete`).
+
+Disposition runs before Modes A and B. One candidate gets one destination:
+
+- A mistake `make verify`, lefthook, or a test can refuse becomes a check. The check's failure text names what to change.
+- A slow file search becomes one pointer in the spoke whose globs already cover that path.
+- A failure the next agent must recognize from symptoms becomes a symptom / cause / fix row.
+- A judgment for a reviewer, an access note, or a deletion is proposed and waits for a yes.
+
+Mode A writes the class. Mode B may name files, routes, and components when the architecture map changed. There is no third mode. If nothing qualifies, the result is still one line: "Nothing to capture — session was routine."
+
+### Local code graph
+
+The graph is a local index of product source, used when the question is "who calls this?" It does not replace the spokes.
+
+Install the free CLI yourself. PyPI package `graphifyy`, command `graphify`. Bootstrap and upgrade do not install it. Every call sets `GRAPHIFY_BACKEND=none`. Repository data stays on the machine. The pack runs two commands:
+
+```bash
+GRAPHIFY_BACKEND=none graphify update .
+GRAPHIFY_BACKEND=none graphify query "who calls this handler"
+```
+
+`update` is the first build and every refresh. `query` reads `graphify-out/graph.json`. That directory is gitignored.
+
+Bootstrap copies `.graphifyignore` to the repo root so `.cursor/`, `planning/`, markdown, and `.mdc` files stay out of the scan, and it adds a lefthook post-commit line that runs the same `update` command. A missing CLI is a warning, not a failed bootstrap. Install it before T01 if you want the graph. T01 runs `update` once when skeleton source exists. An empty tree skips the build and does not fail T01. `make verify` remains the T01 bar. If `update` cannot create `graph.json`, record "graph absent" and continue.
+
+A missing binary makes the post-commit hook red and does not undo the commit. The binary must be on the PATH lefthook uses.
+
+An `EXTRACTED` edge is a reason to open a file. An `INFERRED` or `AMBIGUOUS` edge is a hint, not a rule. If the spoke and the edge disagree, the spoke wins.
+
+An existing Turboplan project gets the same blocks and the same ignore file from `scripts/upgrade-into.sh /absolute/path`. Do not re-run `install-into.sh`. A second upgrade prints `already at methodology 2` and does not duplicate the blocks.
 
 ---
 
@@ -353,6 +389,8 @@ Always in the hub. Four parts:
 | 3   | Surgical Changes      | Touch only what's required; clean only your own orphans |
 | 4   | Goal-Driven Execution | Verifiable success criteria; step → verify loops        |
 
+Ponytail sits after those four sections in the hub. It is the size rule for product source during execute: skip what nobody asked for, reuse a helper the repo already has, then the standard library, then an installed dependency, then one line, otherwise the minimum that still works. The diff still reaches callers, the failing test, and `make verify`. Ponytail does not apply to `.cursor/rules/`, `.cursor/skills/`, `planning/`, or the README.
+
 ---
 
 ## 🧱 Engineering standards (internal — for Turboplan's own seed files)
@@ -362,9 +400,12 @@ project, **replace** these with the user's actual choices — do not copy this i
 the target repo.
 
 - **Verify gate**: root `Makefile` with `verify` target (lint + test + build),
-  lint config, lefthook pre-commit → verify
+  lint config, lefthook pre-commit → verify. A new check's failure text names the fix.
+- **Local code graph**: `.graphifyignore` at the repo root, `graphify-out/` gitignored,
+  lefthook post-commit runs `GRAPHIFY_BACKEND=none graphify update .`. The human
+  installs the free `graphify` CLI (PyPI `graphifyy`). A missing CLI is a warning.
 - **Toolchain**: latest stable for the project's language; document pins as concerns
-- **Gitignore**: always `.env*` + `tmp/` + stack-specific artifacts
+- **Gitignore**: always `.env*` + `tmp/` + `graphify-out/` + stack-specific artifacts
 - **Commit policy**: `/task-2-execute` commits locally on the stub branch.
   Subjects match `Fnn Tnn Sn One sentence.` `/task-3-complete` commits the
   close-out and pushes by default (`--no-push` to skip). No commits on
@@ -383,6 +424,8 @@ the target repo.
 - Not commits on `main` or `master`
 - Not a requirement to use Docker, a specific UI framework, or a specific LLM vendor
 - Not permission to rewrite unrelated repo areas
+- Not a second agent harness. Cursor is the harness. This pack is the methodology.
+- Not a code graph that leaves the machine. `GRAPHIFY_BACKEND=none`. `update` and `query` only.
 
 ---
 
@@ -395,7 +438,8 @@ the target repo.
 - Primary language at latest stable (or pinned older version documented as concern)
 - Every named dependency has a `.cursor/rules/*.mdc` spoke with a docs URL that was opened
 - Root `README.md` present (banner + summary + TOC + emoji headers)
-- Root `.gitignore` covers secrets, `tmp/`, and stack artifacts
+- Root `.gitignore` covers secrets, `tmp/`, `graphify-out/`, and stack artifacts
+- Root `.graphifyignore` is present. A missing `graphify` CLI is recorded as a warning, not a failed bootstrap
 - Domain Routing Map lists domain and dependency spokes; the craft table lists only file spokes that still exist; moment spokes are in neither table
 - `planning/phases/INDEX.md` has ordered tasks with Feature, Depends-on, Next, and slice shape
 - Every INDEX row has a stub file with acceptance criteria and a commits table

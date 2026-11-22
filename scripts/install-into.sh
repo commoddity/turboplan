@@ -141,10 +141,15 @@ done
 [[ -d "${PACK_ROOT}/templates/seeds/verify" ]] || die "verify seeds missing: templates/seeds/verify/"
 [[ -f "${PACK_ROOT}/templates/seeds/verify/Makefile" ]] || die "verify Makefile missing"
 [[ -f "${PACK_ROOT}/templates/seeds/verify/lefthook.yml" ]] || die "verify lefthook missing"
+[[ -f "${PACK_ROOT}/templates/seeds/verify/graphifyignore" ]] || die "verify graphifyignore missing"
 
 # Refuse to install into the pack itself by accident
 if [[ "$(cd "${TARGET}" && pwd)" == "${PACK_ROOT}" ]]; then
   die "Refusing to install into the Turboplan pack itself (${PACK_ROOT})"
+fi
+
+if [[ -f "${TARGET}/.cursor/rules/general.mdc" && -f "${TARGET}/.cursor/skills/dialectic-of-cognition/SKILL.md" ]]; then
+  die "This project already has Turboplan. Run scripts/upgrade-into.sh ${TARGET}"
 fi
 
 echo
@@ -228,13 +233,14 @@ spin_start "Installing verify seeds"
 mkdir -p "${TARGET}/planning/verify-SEED"
 cp "${PACK_ROOT}/templates/seeds/verify/Makefile" "${TARGET}/planning/verify-SEED/Makefile"
 cp "${PACK_ROOT}/templates/seeds/verify/lefthook.yml" "${TARGET}/planning/verify-SEED/lefthook.yml"
+cp "${PACK_ROOT}/templates/seeds/verify/graphifyignore" "${TARGET}/planning/verify-SEED/graphifyignore"
 if [[ -f "${PACK_ROOT}/templates/seeds/verify/golangci.yml" ]]; then
   cp "${PACK_ROOT}/templates/seeds/verify/golangci.yml" "${TARGET}/planning/verify-SEED/golangci.yml"
 fi
 sleep 2.8
 STEP=$((STEP + 1))
 spin_stop
-step_done "${STEP}" "${TOTAL_STEPS}" "🧪" "Verify tooling" "Makefile / lefthook / golangci"
+step_done "${STEP}" "${TOTAL_STEPS}" "🧪" "Verify tooling" "Makefile / lefthook / golangci / graphifyignore"
 
 # --- finale (wizard-style framed summary) -------------------------------------
 echo
@@ -256,6 +262,7 @@ printf '    %s\n' "${DIM}ls ${TARGET}/.cursor/skills${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/README-SEED.md && echo README-SEED ok${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/gitignore-SEED && echo gitignore-SEED ok${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/verify-SEED/Makefile && echo verify-SEED ok${RST}"
+printf '    %s\n' "${DIM}test -f ${TARGET}/planning/verify-SEED/graphifyignore && echo graphifyignore ok${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/checklists/definition-of-done.md && echo checklists ok${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/phases/_INTENT_TEMPLATE.md && echo intent template ok${RST}"
 printf '    %s\n' "${DIM}test -f ${TARGET}/planning/spoke-seeds/deprecation.mdc && echo spoke seed ok${RST}"
